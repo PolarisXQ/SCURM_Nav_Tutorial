@@ -1,0 +1,50 @@
+<!--
+  This Behavior Tree replans the global path once every 15 seconds or if the path becomes invalid. It also has
+  recovery actions specific to planning / control as well as general system issues.
+  This will be continuous if a kinematically valid planner is selected.
+-->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RecoveryNode number_of_retries="12" name="NavigateRecovery">
+      <PipelineSequence name="NavigateWithReplanning">
+        <RateController hz="2.0">
+          <RecoveryNode number_of_retries="1" name="ComputePathToPose">
+            <Fallback>
+              <ReactiveSequence>
+                <!-- <GoalReached goal="{goal}" global_frame="map" robot_base_frame="vehicle" /> -->
+                <Inverter>
+                  <PathExpiringTimer seconds="1" path="{path}"/>
+                </Inverter>
+                <IsPathValid path="{path}"/>
+              </ReactiveSequence>
+              <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+            </Fallback>
+            <Sequence name="ClearingActions">
+              <ClearEntireCostmap name="ClearLocalCostmap-Subtree" service_name="local_costmap/clear_entirely_local_costmap"/>
+              <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
+            </Sequence>
+          </RecoveryNode>
+        </RateController>
+        <RecoveryNode number_of_retries="1" name="FollowPath">
+          <FollowPath path="{path}" controller_id="FollowPath"/>
+          <Sequence name="ClearingActions">
+            <ClearEntireCostmap name="ClearLocalCostmap-Subtree" service_name="local_costmap/clear_entirely_local_costmap"/>
+            <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
+          </Sequence>
+        </RecoveryNode>
+      </PipelineSequence>
+      <ReactiveFallback name="RecoveryFallback">
+        <GoalUpdated/>
+        <RoundRobin name="RecoveryActions">
+          <Sequence name="ClearingActions">
+            <ClearEntireCostmap name="ClearLocalCostmap-Subtree" service_name="local_costmap/clear_entirely_local_costmap"/>
+            <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
+          </Sequence>
+          <Spin spin_dist="0.785"/>
+          <BackUp backup_dist="0.1" backup_speed="0.2"/>
+          <Wait wait_duration="1"/>
+        </RoundRobin>
+      </ReactiveFallback>
+    </RecoveryNode>
+  </BehaviorTree>
+</root>

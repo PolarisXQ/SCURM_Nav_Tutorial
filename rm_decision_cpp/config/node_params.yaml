@@ -1,0 +1,29 @@
+tree_exec:
+  ros__parameters:
+    tree_node_model_export_path: /home/sentry_ws/src/rm_decision_cpp/behavior_tree/tree_nodes.xml
+    tree_xml_file: /home/sentry_ws/src/rm_decision_cpp/behavior_tree/patrol.xml
+    tick_period_milliseconds: 500
+    groot_port: 5556
+    attack_distance: 2.0
+    vehicle_dim: 1.58
+    min_obs_num: 2
+
+# Topics2Blackboard
+
+    game_state_topic_name: "/game_state"
+    msg_timeout_s: 1.0
+    target_topic_name: "/tracker/target"
+
+# nav2pose
+    # goal_pub_topic: "goal_pose"
+    # planner_status_sub_topic: "compute_path_to_pose/_action/status"
+    # controller_status_sub_topic: "navigate_to_pose/_action/status"
+
+# attack
+    attack_distance: 1.5
+    vehicle_dim: 0.3
+    min_obs_num: 2
+    obs_pcl_topic: /terrain_map
+    gimbal_frame: "yaw_link"
+    global_frame: "map"
+    obs_intensity_threshold: 0.2
