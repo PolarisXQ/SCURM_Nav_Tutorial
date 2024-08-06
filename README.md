@@ -11,18 +11,10 @@ For docker guidence, please read [DevcontainterGuide](./DevcontainterGuide.md)
 | ✅[BehaviourTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) | <span style="color:red">**MODIFIED**</span> BehaviourTree lib |
 | ✅cmd_chassis | - cmd_vel to chassis_cmd for communication and motion type of the chassis <br> - exexute rotation command in chassis_link since the true value is unavailable |
 | ✅control_panel | a simple Qt GUI for simulating referee system |
-| ✅dll | Re-Localization in pre-build map |
-| ✅far_planner | an innovate planning algorithm |
 | ✅FAST_LIO | fastlio mapping |
-| ✅imu_tools | imu filter |
 | ✅livox_ros_driver2 | Driver for livox lidar |
 | ✅nav2_plugins <br> - behavior_ext_plugins <br> - costmap_intensity <br> - nav2_mppi_controller_ext <br> - velocity_smoother_ext | self defined nav2 plugins <br> - an enhenced back_up action that move toward free space <br> - 2 costmap_2d layer that use intensity filed of pointcloud msg rather than height (use with terrain analysis in autonomous_exploration_development_environment) <br> - an enhenced mppi controller that is able to adjust pose before some complex terrain(use with terrain analysis-pathNorm) <br> - an enhenced velocity smoother that increase the speed on slope automatically (use with terrain analysis-pathNorm) |
-| ✅octomap_generate | launch file to run octomap_server and octomap_saver |
-| ✅Point-LIO | a robust SLAM algorithm that excellent in cope with aggressive motions |
 | ✅rm_decision_cpp | sentry desicion module based on BehaviourTree.CPP |
-| ✅rm_hardware_driver | |
-| ✅rmoss_core | |
-| ✅rmoss_interfaces | |
 | ✅sentry_description | urdf of the robot model, publish tf from sensor frame to base_link |
 | rm_simulation | an rm version of autonomous_exploration_development_environment |
 
