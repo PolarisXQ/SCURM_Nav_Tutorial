@@ -27,9 +27,9 @@ For docker guidence, please read [DevcontainterGuide](./DevcontainterGuide.md)
 pull the image from dockerhub and run it:
 
 ```bash
-docker pull polaris/scurm:latest
+docker pull polarisxq/scurm:nav_tutorial
 
-docker run --gpus all -dit --ipc=host --net=host --privileged -e DISPLAY=host.docker.internal:0.0 -e NVIDIA_DRIVER_CAPABILITIES=all polaris/scurm:latest
+docker run --gpus all -dit --ipc=host --net=host --privileged -e DISPLAY=host.docker.internal:0.0 -e NVIDIA_DRIVER_CAPABILITIES=all polarisxq/scurm:nav_tutorial
 
 # use XLaunch to open the GUI
 ```
