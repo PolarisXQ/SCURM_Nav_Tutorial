@@ -116,7 +116,6 @@
     <joint name="base_to_wheel2" type="continuous">
         <axis xyz="0 0 1" />
         <anchor xyz="0 0 0" />
-        <limit effort="100" velocity="100" />
         <parent link="base_link"/>
         <child link="wheel_2"/>
         <origin rpy="${-PI/2} 0 0" xyz="-0.1 0.13 0"/>
@@ -201,18 +200,11 @@
                 <remapping>odom:=state_estimation</remapping>
             </ros>
 
-            <update_rate>100</update_rate>
-            <publish_rate>100</publish_rate>
+            <update_rate>20</update_rate>
+            <publish_rate>20</publish_rate>
 
             <publish_odom>false</publish_odom>
             <publish_odom_tf>false</publish_odom_tf>
-
-            <leftFrontJoint>base_to_wheel1</leftFrontJoint>
-            <rightFrontJoint>base_to_wheel3</rightFrontJoint>
-            <leftRearJoint>base_to_wheel2</leftRearJoint>
-            <rightRearJoint>base_to_wheel4</rightRearJoint>
-            <wheelSeparation>0.26</wheelSeparation>
-            <wheelDiameter>0.12</wheelDiameter>
 
             <odometry_frame>odom</odometry_frame>
             <robot_base_frame>base_link</robot_base_frame>
