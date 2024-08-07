@@ -15,9 +15,6 @@
                          stage_remain_time="{stage_remain_time}"
                          game_progress="{game_progress}"
                          current_hp="{current_hp}"/>
-      <Spin hurt_type="{hurt_type}"
-            current_hp="{current_hp}"
-            spin="true"/>
       <ReactiveFallback _while="game_progress==4">
         <Nav2Pose goal="0.47,6.5,0.0,0.0,0.0,0.0,0.0"
                   _while="current_hp&lt;250"/>
@@ -32,9 +29,9 @@
           <Attack name="Calculate Attack Pose"
                   attack_pose="{attack_pose}"
                   target_position="{target_position}"/>
-          <KeepRunningUntilFailure>
+          <Timeout msec="1100">
             <Nav2Pose goal="{attack_pose}"/>
-          </KeepRunningUntilFailure>
+          </Timeout>
         </ReactiveSequence>
         <RetryUntilSuccessful num_attempts="1000">
           <Sequence>
@@ -60,14 +57,6 @@
     <Action ID="Nav2Pose">
       <input_port name="goal"
                   type="geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;">goal send to navigator.</input_port>
-    </Action>
-    <Action ID="Spin">
-      <input_port name="hurt_type"
-                  type="unsigned char"/>
-      <input_port name="current_hp"
-                  type="unsigned short"/>
-      <input_port name="spin"
-                  type="bool">spin or not.</input_port>
     </Action>
     <Action ID="Topics2Blackboard">
       <output_port name="target_armor_id"

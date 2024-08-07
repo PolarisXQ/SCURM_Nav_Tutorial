@@ -13,6 +13,7 @@ find_package(rm_interfaces REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
+find_package(nav2_util REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -33,6 +34,7 @@ set(ros_dependencies
   rm_interfaces
   nav_msgs
   nav2_msgs
+  nav2_util
   geometry_msgs
   behaviortree_cpp
   rclcpp_components
@@ -53,6 +55,9 @@ add_library(${PROJECT_NAME} SHARED
   src/behaviors/anti_autoaim.cpp
   src/behaviors/spin.cpp
   src/behaviors/topics2blackboard.cpp
+  src/behaviors/sentry_cmd.cpp
+  src/behaviors/control_gimbal.cpp
+  src/behaviors/align_chassis.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -69,6 +74,9 @@ add_executable(tree_exec_node src/tree_exec_node.cpp
   src/behaviors/anti_autoaim.cpp
   src/behaviors/spin.cpp
   src/behaviors/topics2blackboard.cpp
+  src/behaviors/sentry_cmd.cpp
+  src/behaviors/control_gimbal.cpp
+  src/behaviors/align_chassis.cpp
 )
 ament_target_dependencies(tree_exec_node ${ros_dependencies})
 

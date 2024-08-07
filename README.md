@@ -52,6 +52,8 @@ rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install
 ```
 
+install groot2
+
 2. run the simulation
 
 ```bash
@@ -92,6 +94,12 @@ ros2 launch sentry_bringup bringup_all_in_one.launch.py
 8. start decision module
     
 ```bash
+ros2 run control_panel control_panel
+```
+
+```bash
 ros2 launch rm_decision_cpp run.launch.py
 ```
+
+# 追踪
 

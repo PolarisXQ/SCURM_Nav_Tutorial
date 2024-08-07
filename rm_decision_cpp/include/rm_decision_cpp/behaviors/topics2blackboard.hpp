@@ -41,7 +41,7 @@ namespace rm_decision
   class Topics2Blackboard : public SyncActionNode
   {
   public:
-    Topics2Blackboard(const std::string &name, const NodeConfig &config, std::shared_ptr<rclcpp::Node> node);
+    Topics2Blackboard(const std::string &name, const NodeConfig &config, std::shared_ptr<rclcpp::Node> node, std::shared_ptr<tf2_ros::Buffer> tf_buffer, std::shared_ptr<tf2_ros::TransformListener> tf_listener);
     ~Topics2Blackboard() override = default;
     NodeStatus tick() override;
     static PortsList providedPorts();
@@ -62,13 +62,15 @@ namespace rm_decision
 
     geometry_msgs::msg::Point target_r_map_;
     geometry_msgs::msg::PoseStamped target_pose_;
+    std::string target_armor_id_;
 
-    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
     geometry_msgs::msg::TransformStamped t;
     std::string to_frame_;
     std::string team_;
-    double msg_timeout_s_;
+    double tracking_timeout_s_;
+    rclcpp::Time last_tracking_time_;
   };
 } // end namespace rm_decision
 #endif

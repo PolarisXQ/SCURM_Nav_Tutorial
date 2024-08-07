@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4">
-  <BehaviorTree ID="TEST">
+  <BehaviorTree ID="RMUC_red">
     <ReactiveSequence>
-      <RunOnce then_skip="true">
-        <Script code="spin:=false"/>
-      </RunOnce>
       <Topics2Blackboard target_armor_id="{target_armor_id}"
                          tracking="{tracking}"
                          projectile_allowance_17mm="{projectile_sllowance}"
@@ -18,30 +15,18 @@
                          stage_remain_time="{stage_remain_time}"
                          game_progress="{game_progress}"
                          current_hp="{current_hp}"/>
-      <Spin hurt_type="{hurt_type}"
-            current_hp="{current_hp}"
-            spin="{spin}"/>
-      <ReactiveFallback>
-        <ReactiveSequence name="ATTCK!"
-                          _while="tracking"
-                          _onHalted="spin:=false">
+      <ReactiveFallback _while="game_progress==4 &amp;&amp; current_hp&gt;0">
+        <ReactiveSequence name="ATTCK"
+                          _while="tracking==true">
           <Attack name="Calculate Attack Pose"
                   attack_pose="{attack_pose}"
-                  target_position="{target_position}"
-                  _onSuccess="spin:=true"/>
-          <KeepRunningUntilFailure>
-            <Nav2Pose goal="{attack_pose}"/>
-          </KeepRunningUntilFailure>
+                  target_position="{target_position}"/>
+          <Nav2Pose goal="{attack_pose}"/>
         </ReactiveSequence>
-        <RetryUntilSuccessful num_attempts="1000">
-          <Sequence>
-            <Nav2Pose goal="0.0,0.0,0.0,0.0,0.0,0.0,0.0"/>
-            <Sleep msec="1000"/>
-            <Nav2Pose goal="0.0,0.0,0.0,0.0,0.0,0.0,0.0"/>
-            <Sleep msec="1000"/>
-            <AlwaysFailure/>
-          </Sequence>
-        </RetryUntilSuccessful>
+        <Sequence _while="tracking==false">
+          <Nav2Pose name="Patrol"
+                    goal="0.0,2.0,0.0,0.0,0.0,0.0,0.0"/>
+        </Sequence>
       </ReactiveFallback>
     </ReactiveSequence>
   </BehaviorTree>
@@ -57,14 +42,6 @@
     <Action ID="Nav2Pose">
       <input_port name="goal"
                   type="geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;">goal send to navigator.</input_port>
-    </Action>
-    <Action ID="Spin">
-      <input_port name="hurt_type"
-                  type="unsigned char"/>
-      <input_port name="current_hp"
-                  type="unsigned short"/>
-      <input_port name="spin"
-                  type="bool">spin or not.</input_port>
     </Action>
     <Action ID="Topics2Blackboard">
       <output_port name="target_armor_id"

@@ -13,7 +13,7 @@ a robot decision module base on BehaviorTree.CPP and ROS2
 
 - This documentation is a digest of the official documentation. For more details, please refer to the [official documentation](https://www.behaviortree.dev/).
 
-- The official documentation [recommends way](https://www.behaviortree.dev/docs/ros2_integration) of integrate BehaviorTree.CPP with ROS2 is to use the server-client model. It is good, fine. However, as for the system I am working on, the only task of the decision module is to move the robot to a specific position, so I directly use seperate ros nodes to control the robot.
+- Server-client mode is recommended for the communication between the behavior tree and the robot control module. 
 
 ## 2. A INTRO 
 
@@ -241,7 +241,7 @@ namespace rm_decision
     double vehicle_X_,vehicle_Y_;
     int pose_candidate_num,min_obs_num_;
     double obs_intensity_threshold_;
-    std::string gimble_frame_,global_frame_;
+    std::string global_frame_;
     std::string obs_pcl_topic_,target_topic_;
     auto_aim_interfaces::msg::Target target_info_;
     geometry_msgs::msg::Pose target_point_;

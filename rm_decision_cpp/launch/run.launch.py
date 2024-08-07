@@ -45,6 +45,7 @@ def generate_launch_description():
         name='tree_exec',
         executable='tree_exec_node',
         parameters=[config],
+        arguments=['--ros-args', '--log-level', 'info'],
         output='screen')
     ld.add_action(demo_cmd)
 

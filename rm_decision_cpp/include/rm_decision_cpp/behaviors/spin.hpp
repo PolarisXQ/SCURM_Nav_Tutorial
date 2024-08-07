@@ -4,7 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 // #include <geometry_msgs/msg/point_stamped.hpp>
 #include <std_msgs/msg/int8.hpp>
-#include <std_msgs/msg/int16.hpp>
+#include <std_msgs/msg/float32.hpp>
 #include "auto_aim_interfaces/msg/target.hpp"
 #include <rclcpp/qos.hpp>
 #include <optional>
@@ -24,11 +24,14 @@ namespace rm_decision
 
   private:
     rclcpp::Node::SharedPtr node_;
-    bool target_tracking_;
     bool spin_;
-    std::uint16_t last_hp_;
+    bool slope_degree_received_;
+    double stop_spin_slope_degree_thre_;
+    double slope_degree_;
     rclcpp::Publisher<std_msgs::msg::Int8>::SharedPtr chassis_type_pub_;
-    // void target_callback_(const auto_aim_interfaces::msg::Target::SharedPtr msg);
+    rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr slope_degree_sub_;
+
+    void slope_degree_callback(const std_msgs::msg::Float32::SharedPtr msg);
   };
 } // end namespace rm_decision
 #endif

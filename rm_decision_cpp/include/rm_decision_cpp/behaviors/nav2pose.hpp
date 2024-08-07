@@ -48,6 +48,9 @@ namespace rm_decision
     rclcpp_action::Client<NavigateToPose>::SharedPtr action_client_;
     // goal handle
     NavigateToPoseGoalHandle::SharedPtr goal_handle_;
+    // send goal timeout
+    int send_goal_timeout_;
+    nav2_msgs::action::NavigateToPose::Goal navigation_goal_;
 
   };
 } // end namespace rm_decision

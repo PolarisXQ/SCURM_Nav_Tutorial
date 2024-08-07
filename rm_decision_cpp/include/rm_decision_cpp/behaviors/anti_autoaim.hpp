@@ -27,7 +27,7 @@ namespace rm_decision
   private:
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
     rclcpp::Node::SharedPtr node_;
-    unsigned int msec_;
+    float msec_;
     float speed_;    
     TimerQueue<> timer_;
     uint64_t timer_id_;

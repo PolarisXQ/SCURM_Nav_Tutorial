@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4">
-  <BehaviorTree ID="RMUC">
+  <BehaviorTree ID="RMUC_blue">
     <ReactiveSequence>
-      <RunOnce then_skip="true">
-        <Script code="spin:=false"/>
-      </RunOnce>
       <Topics2Blackboard target_armor_id="{target_armor_id}"
                          tracking="{tracking}"
                          projectile_allowance_17mm="{projectile_sllowance}"
@@ -18,35 +15,44 @@
                          stage_remain_time="{stage_remain_time}"
                          game_progress="{game_progress}"
                          current_hp="{current_hp}"/>
-      <Spin hurt_type="{hurt_type}"
-            current_hp="{current_hp}"
-            spin="{spin}"/>
+      <Spin spin="true"
+            _while="game_progress==4 &amp;&amp; my_outpost_hp&lt;=0"/>
+      <Spin spin="false"
+            _while="game_progress!=4 || my_outpost_hp&gt;0"/>
       <ReactiveFallback _while="game_progress==4 &amp;&amp; current_hp&gt;0">
-        <Nav2Pose name="get supply"
-                  goal="0.0,0.0,0.0,0.0,0.0,0.0,0.0"
-                  _while="current_hp&lt;200"/>
-        <Nav2Pose name="smash the outpost"
-                  goal="4.66,0.83,0.0,0.0,0.0,0.0,0.0"
-                  _while="enemy_outpost_hp&gt;0"/>
-        <Nav2Pose name="patrol at highland"
-                  goal="-0.44,-3.7,0.0,0.0,0.0,0.0,0.0"
-                  _while="my_outpost_hp&gt;0"/>
+        <IfThenElse _while="current_hp&lt;200">
+          <Nav2Pose name="get supply"
+                    goal="18.48,10.18,0.0,0.0,0.0,0.0,0.0"/>
+          <Sleep msec="5000"/>
+        </IfThenElse>
+        <Sequence _while="my_outpost_hp&lt;600">
+          <Nav2Pose name="Stay at Patrol Zone"
+                    goal="14.89,4.41,0.0,0.0,0.0,0.0,0.0"/>
+          <AntiAutoAim speed="0.8"
+                       msec="4"/>
+        </Sequence>
+        <ReactiveSequence name="ATTCK"
+                          _while="tracking==true &amp;&amp; target_armor_id==&quot;2&quot;">
+          <Attack name="Calculate Attack Pose"
+                  attack_pose="{attack_pose}"
+                  target_position="{target_position}"/>
+          <Nav2Pose goal="{attack_pose}"/>
+        </ReactiveSequence>
+        <ReactiveSequence _while="enemy_outpost_hp&gt;0 &amp;&amp; stage_remain_time&gt;330">
+          <Nav2Pose name="smash the outpost"
+                    goal="6.29,0.66,0.0,0.0,0.0,0.0,0.0"/>
+          <ControlGimbal goal="4.8,-2.7,0.5,0.0,0.0,0.0,0.0"/>
+        </ReactiveSequence>
         <ReactiveSequence name="ATTCK"
                           _while="tracking==true">
           <Attack name="Calculate Attack Pose"
                   attack_pose="{attack_pose}"
                   target_position="{target_position}"/>
-          <KeepRunningUntilFailure>
-            <Nav2Pose goal="{attack_pose}"/>
-          </KeepRunningUntilFailure>
+          <Nav2Pose goal="{attack_pose}"/>
         </ReactiveSequence>
-        <Sequence>
-          <Nav2Pose name="stay at patrol zone"
-                    goal="0.0,0.2,0.0,0.0,0.0,0.0,0.0"/>
-          <Repeat num_cycles="100000">
-            <AntiAutoAim speed="0.5"
-                         msec="4"/>
-          </Repeat>
+        <Sequence _while="tracking==false">
+          <Nav2Pose name="Patrol"
+                    goal="4.68,3.05,0.0,0.0,0.0,0.0,0.0"/>
         </Sequence>
       </ReactiveFallback>
     </ReactiveSequence>
@@ -66,15 +72,15 @@
       <input_port name="target_position"
                   type="geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
     </Action>
+    <Action ID="ControlGimbal">
+      <input_port name="goal"
+                  type="geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;">goal send to navigator.</input_port>
+    </Action>
     <Action ID="Nav2Pose">
       <input_port name="goal"
                   type="geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;">goal send to navigator.</input_port>
     </Action>
     <Action ID="Spin">
-      <input_port name="hurt_type"
-                  type="unsigned char"/>
-      <input_port name="current_hp"
-                  type="unsigned short"/>
       <input_port name="spin"
                   type="bool">spin or not.</input_port>
     </Action>

@@ -62,7 +62,6 @@ pathNorm
 install(
   DIRECTORY
   launch
-  maps
   rviz
   DESTINATION share/${PROJECT_NAME}
 )

@@ -32,6 +32,15 @@
         <xacro:default_inertial mass="8.2"/>    
     </link>
 
+    <link name="yaw_link"/>
+
+    <joint name="base_to_yaw" type="continuous">
+        <parent link="base_link"/>
+        <child link="yaw_link"/>
+        <origin rpy="0 0 0" xyz="0 0 0.1"/>
+        <axis xyz="0 0 1" />
+    </joint>
+
     <link name="wheel_1">
         <visual>
             <geometry>

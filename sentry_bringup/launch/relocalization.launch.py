@@ -65,7 +65,7 @@ def generate_launch_description():
   )
 
   delayed_start_lio = TimerAction(
-    period=3.0,
+    period=1.0,
     actions=[
       fast_lio_node
     ]

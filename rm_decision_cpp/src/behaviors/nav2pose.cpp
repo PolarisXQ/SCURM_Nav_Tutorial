@@ -7,6 +7,7 @@ namespace rm_decision
   : StatefulActionNode(name, config), node_(node)
   {
     action_client_ = rclcpp_action::create_client<NavigateToPose>(node_, "navigate_to_pose");
+    node_->get_parameter_or("send_goal_timeout_ms", send_goal_timeout_, 1000);
   }
 
   NodeStatus Nav2Pose::onStart()
@@ -18,7 +19,6 @@ namespace rm_decision
       return NodeStatus::FAILURE;
     }
 
-    nav2_msgs::action::NavigateToPose::Goal navigation_goal_;
     navigation_goal_.pose = goal.value();
     navigation_goal_.pose.header.frame_id = "map";
     navigation_goal_.pose.header.stamp = node_->now();
@@ -30,7 +30,8 @@ namespace rm_decision
     // send_goal_options.goal = navigation_goal_;
 
     auto future_goal_handle = action_client_->async_send_goal(navigation_goal_);
-    if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
+    RCLCPP_DEBUG(node_->get_logger(), "send goal timeout ms: %d", send_goal_timeout_);
+    if (rclcpp::spin_until_future_complete(node_, future_goal_handle, std::chrono::milliseconds(send_goal_timeout_)) != rclcpp::FutureReturnCode::SUCCESS)
     {
       RCLCPP_ERROR(node_->get_logger(), "send goal failed");
       return NodeStatus::FAILURE;
@@ -49,6 +50,45 @@ namespace rm_decision
 
   NodeStatus Nav2Pose::onRunning()
   {
+    // check if goal update
+    auto new_goal = getInput<geometry_msgs::msg::PoseStamped>("goal");
+    if (!new_goal)
+    {
+      RCLCPP_ERROR(node_->get_logger(), "goal is not set");
+      return NodeStatus::FAILURE;
+    }
+    // RCLCPP_INFO(node_->get_logger(), "new goal [%f, %f, %f]", new_goal->pose.position.x, new_goal->pose.position.y, new_goal->pose.position.z);
+    // RCLCPP_INFO(node_->get_logger(), "navigation goal [%f, %f, %f]", navigation_goal_.pose.pose.position.x, navigation_goal_.pose.pose.position.y, navigation_goal_.pose.pose.position.z);
+    if ((new_goal.value().pose.position.x - navigation_goal_.pose.pose.position.x) > std::numeric_limits<double>::epsilon() ||
+      (new_goal.value().pose.position.y - navigation_goal_.pose.pose.position.y) > std::numeric_limits<double>::epsilon() ||
+      (new_goal.value().pose.position.z - navigation_goal_.pose.pose.position.z) > std::numeric_limits<double>::epsilon())
+    {
+      RCLCPP_INFO(node_->get_logger(), "goal updated");
+      // auto cancel_future = action_client_->async_cancel_goal(goal_handle_);
+      // if (rclcpp::spin_until_future_complete(node_, cancel_future) != rclcpp::FutureReturnCode::SUCCESS)
+      // {
+      //   RCLCPP_ERROR(node_->get_logger(), "cancel goal failed");
+      // }
+      // RCLCPP_INFO(node_->get_logger(), "goal canceled");
+      // send new goal
+      navigation_goal_.pose = new_goal.value();
+      navigation_goal_.pose.header.frame_id = "map";
+      navigation_goal_.pose.header.stamp = node_->now();
+      auto future_goal_handle = action_client_->async_send_goal(navigation_goal_);
+      if (rclcpp::spin_until_future_complete(node_, future_goal_handle, std::chrono::milliseconds(send_goal_timeout_)) != rclcpp::FutureReturnCode::SUCCESS)
+      {
+        RCLCPP_ERROR(node_->get_logger(), "send goal failed");
+        return NodeStatus::FAILURE;
+      }
+      goal_handle_ = future_goal_handle.get();
+      if (!goal_handle_)
+      {
+        RCLCPP_ERROR(node_->get_logger(), "goal handle is null");
+        return NodeStatus::FAILURE;
+      }
+      RCLCPP_INFO(node_->get_logger(), "Navigating to pose [%f, %f, %f]", new_goal->pose.position.x, new_goal->pose.position.y, new_goal->pose.position.z);
+    }
+
     switch (goal_handle_->get_status())
     {
     case action_msgs::msg::GoalStatus::STATUS_UNKNOWN:

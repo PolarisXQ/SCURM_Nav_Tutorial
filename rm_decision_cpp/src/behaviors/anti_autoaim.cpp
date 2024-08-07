@@ -33,42 +33,50 @@ namespace rm_decision
     // rclcpp::spin_some(node_);
     auto now = node_->now();
     auto elapsed_time = (now - start_time_).seconds();
+    float now_speed = speed_;
     geometry_msgs::msg::Twist cmd_vel_msg;
-    if (elapsed_time >= msec_)
+    RCLCPP_DEBUG(node_->get_logger(),"elapsed_time: %f", elapsed_time);
+    double angle = 30.0/180.0*3.14159;
+    if (elapsed_time < msec_/4)
     {
-      cmd_vel_msg.linear.x = 0;
-      cmd_vel_msg.linear.y = 0;
-      cmd_vel_msg.linear.z = 0;
-      cmd_vel_msg.angular.x = 0;
-      cmd_vel_msg.angular.y = 0;
-      cmd_vel_msg.angular.z = 0;
-      cmd_vel_pub_->publish(cmd_vel_msg);
-      return NodeStatus::SUCCESS;
-    }
-    else
-    {
-      float angle = 30.0;
-      // change direction every 0.5 seconds
-      switch((int)elapsed_time*2 % 4)
-      {
-        case 0:
-          cmd_vel_msg.linear.y = speed_;
-          break;
-        case 1:
-          cmd_vel_msg.linear.x = -sin(angle/180*3.14)*speed_*cos(angle/180*3.14);
-          cmd_vel_msg.linear.y = -cos(angle/180*3.14)*speed_*cos(angle/180*3.14);
-          break;
-        case 2:
-          cmd_vel_msg.linear.y = speed_;
-          break;
-        case 3:
-          cmd_vel_msg.linear.x = sin(angle/180*3.14)*speed_*cos(angle/180*3.14);
-          cmd_vel_msg.angular.y = cos(angle/180*3.14)*speed_*cos(angle/180*3.14);
-          break;
-      }
+      if(elapsed_time < msec_/16 || elapsed_time > 3*msec_/16)
+        now_speed*=0.5;
+      cmd_vel_msg.linear.y = now_speed;
       cmd_vel_pub_->publish(cmd_vel_msg);
       return NodeStatus::RUNNING;
     }
+    else if(elapsed_time < msec_/2)
+    {
+      if(elapsed_time < 5*msec_/16 || elapsed_time > 7*msec_/16)
+        now_speed*=0.5;
+      cmd_vel_msg.linear.y = -now_speed*cos(angle)/cos(angle);
+      cmd_vel_msg.linear.x = -now_speed*sin(angle)/cos(angle); 
+      cmd_vel_pub_->publish(cmd_vel_msg);
+      return NodeStatus::RUNNING;
+    }
+    else if(elapsed_time < 3*msec_/4)
+    {
+      if(elapsed_time < 9*msec_/16 || elapsed_time > 11*msec_/16)
+        now_speed*=0.5;
+      cmd_vel_msg.linear.y = now_speed;
+      cmd_vel_pub_->publish(cmd_vel_msg);
+      return NodeStatus::RUNNING;
+    }
+    else if(elapsed_time < msec_)
+    {
+      if(elapsed_time < 13*msec_/16 || elapsed_time > 15*msec_/16)
+        now_speed*=0.5;
+      cmd_vel_msg.linear.y = -now_speed*cos(angle)/cos(angle);
+      cmd_vel_msg.linear.x = now_speed*sin(angle)/cos(angle);
+      cmd_vel_pub_->publish(cmd_vel_msg);
+      return NodeStatus::RUNNING;
+    }
+    else
+    {
+      cmd_vel_pub_->publish(cmd_vel_msg);
+      return NodeStatus::SUCCESS;
+    }
+
   }
   
 

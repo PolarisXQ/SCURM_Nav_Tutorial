@@ -3,19 +3,22 @@
 using namespace BT;
 namespace rm_decision
 {
-  Topics2Blackboard::Topics2Blackboard(const std::string &name, const NodeConfig &config, std::shared_ptr<rclcpp::Node> node) 
-  : SyncActionNode(name, config), node_(node),
-    to_frame_("map")
+  Topics2Blackboard::Topics2Blackboard(const std::string &name, const NodeConfig &config, std::shared_ptr<rclcpp::Node> node, std::shared_ptr<tf2_ros::Buffer> tf_buffer, std::shared_ptr<tf2_ros::TransformListener> tf_listener) 
+  : SyncActionNode(name, config), node_(node), tf_buffer_(tf_buffer), tf_listener_(tf_listener)
   {
-    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(node_->get_clock());
-    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+    bool use_costmap;
+    node_->get_parameter_or<bool>("use_costmap", use_costmap, true);
+    std::string global_frame;
+    node_->get_parameter("global_frame", global_frame);
+    if(use_costmap)
+      to_frame_="map";
+    else
+      to_frame_=global_frame;
     
-    node_->declare_parameter<double>("msg_timeout_s", 1.0);
-    msg_timeout_s_ = node_->get_parameter("msg_timeout_s").as_double();
+    tracking_timeout_s_ = node_->get_parameter("tracking_timeout_s").as_double();
 
     // msg from referee
     std::string game_state_topic_name;
-    node_->declare_parameter("game_state_topic_name", "game_state");
     node_->get_parameter("game_state_topic_name",game_state_topic_name);
     game_state_sub_ = node_->create_subscription<rm_interfaces::msg::GameState>(
         game_state_topic_name, 10,
@@ -23,7 +26,6 @@ namespace rm_decision
 
     // msg from autoaim
     std::string target_topic_name;
-    node_->declare_parameter("target_topic_name", "/tracker/target");
     node_->get_parameter("target_topic_name",target_topic_name);
     target_sub_ = node_->create_subscription<auto_aim_interfaces::msg::Target>(
       target_topic_name, rclcpp::SensorDataQoS(),
@@ -33,11 +35,11 @@ namespace rm_decision
   NodeStatus Topics2Blackboard::tick()
   {
     check_subscriber_();
-    if(node_->now().seconds() - target_->header.stamp.sec > msg_timeout_s_)
-    {
-      setOutput<bool>("tracking", false);
-      setOutput<std::string>("target_armor_id", "None");
-    }
+    // if(target_.tracking == false && node_->now().seconds() - target_->header.stamp.sec > tracking_timeout_s_)
+    // {
+    //   setOutput<bool>("tracking", false);
+    //   setOutput<std::string>("target_armor_id", "None");
+    // }
     return NodeStatus::SUCCESS;
   }
 
@@ -78,7 +80,9 @@ namespace rm_decision
   void Topics2Blackboard::target_callback_(const auto_aim_interfaces::msg::Target::SharedPtr msg)
   {
     target_ = *msg;
+    target_armor_id_ = target_->id;
     setOutput<bool>("tracking", target_->tracking);
+    // if tracking, calculate target pose at map directly
     if (target_->tracking)
     {
       geometry_msgs::msg::TransformStamped t;
@@ -99,9 +103,21 @@ namespace rm_decision
       target_pose_.header.frame_id = to_frame_;
       target_pose_.header.stamp = node_->now();
       setOutput<geometry_msgs::msg::PoseStamped>("target_position", target_pose_);
-      setOutput<std::string>("target_armor_id", target_->id);
+      setOutput<std::string>("target_armor_id", target_armor_id_);
+      last_tracking_time_ = node_->now();
     }else{
-      setOutput<std::string>("target_armor_id", "None");
+      // check if tracking timeout
+      if(node_->now().seconds() - last_tracking_time_.seconds() > tracking_timeout_s_)
+      {
+        setOutput<bool>("tracking", false);
+        setOutput<std::string>("target_armor_id", "None");
+      }
+      else
+      {
+        setOutput<bool>("tracking", true);
+        setOutput<geometry_msgs::msg::PoseStamped>("target_position", target_pose_);
+        setOutput<std::string>("target_armor_id", target_armor_id_);
+      }
     }
 
   }

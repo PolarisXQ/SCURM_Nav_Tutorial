@@ -244,20 +244,20 @@ controller_server:
       # max_robot_pose_search_dist: 10.0
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: False
-      min_vel_x: -1.5
-      min_vel_y: -1.5
-      max_vel_x: 1.5
-      max_vel_y: 1.5
-      max_vel_theta: 8.0
-      min_speed_xy: -8.0
-      max_speed_xy: 8.0
-      min_speed_theta: -8.0
-      acc_lim_x: 5.0
-      acc_lim_y: 5.0
-      acc_lim_theta: 15.0
-      decel_lim_x: -5.0
-      decel_lim_y: -5.0
-      decel_lim_theta: -15.0
+      min_vel_x: -1.0
+      min_vel_y: -1.0
+      max_vel_x: 1.0
+      max_vel_y: 1.0
+      max_vel_theta: 5.0
+      min_speed_xy: -5.0
+      max_speed_xy: 3.0
+      min_speed_theta: -5.0
+      acc_lim_x: 3.0
+      acc_lim_y: 3.0
+      acc_lim_theta: 10.0
+      decel_lim_x: -3.0
+      decel_lim_y: -3.0
+      decel_lim_theta: -10.0
       vx_samples: 20
       vy_samples: 20
       vtheta_samples: 20
