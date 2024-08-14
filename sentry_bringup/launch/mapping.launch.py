@@ -12,40 +12,6 @@ def generate_launch_description():
   config_path = os.path.join(
       get_package_share_directory('sentry_bringup'), 'params') 
 
-  rm_base_node=IncludeLaunchDescription(
-      PythonLaunchDescriptionSource([os.path.join(
-          get_package_share_directory('rm_base'), 'launch', 'rm_base.launch.py')])
-  )
-  
-  twist2chassis_cmd_node=Node(
-    package='cmd_chassis',
-    executable='twist2chassis_cmd',
-    output='screen'
-  )
-  
-  fake_joint_node=Node(
-    package='cmd_chassis',
-    executable='fake_joint',
-    output='screen'
-  )
-  
-  twist_transformer_node=Node(
-    package='cmd_chassis',
-    executable='twist_transformer',
-    output='screen'
-  )
-
-  rot_imu=Node(
-    package='cmd_chassis',
-    executable='rot_imu',
-    output='screen'
-  )
-
-  # mid360
-  mid360_node = IncludeLaunchDescription(
-      PythonLaunchDescriptionSource([os.path.join(
-          get_package_share_directory('livox_ros_driver2'), 'launch_ROS2', 'msg_MID360_launch.py')])
-  )
   
   # fast-lio localization   
   fast_lio_param = '/home/sentry_ws/src/sentry_bringup/params/fast_lio_mapping_param.yaml'
