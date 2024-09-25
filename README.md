@@ -101,5 +101,6 @@ ros2 run control_panel control_panel
 ros2 launch rm_decision_cpp run.launch.py
 ```
 
-# 追踪
+## Acknowledgment
 
+rm_simulation packages is from [pb_rm_simulation](https://github.com/LihanChen2004/pb_rm_simulation), big thanks to [LihanChen2004](https://github.com/LihanChen2004)
