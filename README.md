@@ -34,6 +34,8 @@ docker run --gpus all -dit --ipc=host --net=host --privileged -e DISPLAY=host.do
 # use XLaunch to open the GUI
 ```
 
+Code inside the image is not always the latest version, please run `git pull` inside the container under the folder `\home\sentry_ws\src` to update, then re-complie the workspace.
+
 **BUILD FROM SOURCE:(NOTE THAT SOME FILE PATH MUST BE CHANGED)**
 
 clone this repo to your workspace:
