@@ -1,0 +1,27 @@
+In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/logging.hpp:24[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/client.hpp:40[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/callback_group.hpp:24[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/any_executable.hpp:20[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategy.hpp:25[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategies.hpp:18[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor_options.hpp:20[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor.hpp:37[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/multi_threaded_executor.hpp:25[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:21[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+                 from [01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:1[m[K:
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:[m[K In lambda function:
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:171:39:[m[K [01;31m[Kerror: [m[K‘[01m[Kusing element_type = struct nav2_msgs::action::FollowWaypoints_Result_<std::allocator<void> >[m[K’ {aka ‘[01m[Kstruct nav2_msgs::action::FollowWaypoints_Result_<std::allocator<void> >[m[K’} has no member named ‘[01m[Ksuccessful_poses[m[K’
+  171 |                        result.result->[01;31m[Ksuccessful_poses[m[K, result.result->failed_poses);
+      |                                       [01;31m[K^~~~~~~~~~~~~~~~[m[K
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:171:72:[m[K [01;31m[Kerror: [m[K‘[01m[Kusing element_type = struct nav2_msgs::action::FollowWaypoints_Result_<std::allocator<void> >[m[K’ {aka ‘[01m[Kstruct nav2_msgs::action::FollowWaypoints_Result_<std::allocator<void> >[m[K’} has no member named ‘[01m[Kfailed_poses[m[K’
+  171 |             result.result->successful_poses, result.result->[01;31m[Kfailed_poses[m[K);
+      |                                                             [01;31m[K^~~~~~~~~~~~[m[K
+
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:[m[K In lambda function:
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:189:58:[m[K [01;31m[Kerror: [m[K‘[01m[Kusing element_type = const struct nav2_msgs::action::FollowWaypoints_Feedback_<std::allocator<void> >[m[K’ {aka ‘[01m[Kconst struct nav2_msgs::action::FollowWaypoints_Feedback_<std::allocator<void> >[m[K’} has no member named ‘[01m[Ktotal_waypoints[m[K’
+  189 |                    feedback->current_waypoint, feedback->[01;31m[Ktotal_waypoints[m[K);
+      |                                                          [01;31m[K^~~~~~~~~~~~~~~[m[K
+gmake[2]: *** [CMakeFiles/waypoint_loader_cpp.dir/build.make:76: CMakeFiles/waypoint_loader_cpp.dir/src/waypoint_loader.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/waypoint_loader_cpp.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

@@ -1,0 +1,5 @@
+[31mCMake Error at CMakeLists.txt:10 (target_link_libraries):
+  Cannot specify link libraries for target "waypoint_loader_cpp" which is not
+  built by this project.
+
+[0m

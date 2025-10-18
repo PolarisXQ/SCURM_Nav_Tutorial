@@ -1,0 +1,28 @@
+[0.026s] Invoking command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sentry_ws/install/control_panel:/opt/ros/humble /usr/bin/cmake --build /home/sentry_ws/src/build/sentry_waypoint_loader_cpp -- -j16 -l16
+[0.096s] [35m[1mConsolidate compiler generated dependencies of target waypoint_loader_cpp[0m
+[0.135s] [ 50%] [32mBuilding CXX object CMakeFiles/waypoint_loader_cpp.dir/src/waypoint_loader.cpp.o[0m
+[5.874s] [100%] [32m[1mLinking CXX executable waypoint_loader_cpp[0m
+[6.535s] [100%] Built target waypoint_loader_cpp
+[6.552s] Invoked command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sentry_ws/install/control_panel:/opt/ros/humble /usr/bin/cmake --build /home/sentry_ws/src/build/sentry_waypoint_loader_cpp -- -j16 -l16
+[6.606s] Invoking command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sentry_ws/install/control_panel:/opt/ros/humble /usr/bin/cmake --install /home/sentry_ws/src/build/sentry_waypoint_loader_cpp
+[6.619s] -- Install configuration: ""
+[6.619s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/lib/sentry_waypoint_loader_cpp/waypoint_loader_cpp
+[6.621s] -- Set runtime path of "/home/sentry_ws/src/install/sentry_waypoint_loader_cpp/lib/sentry_waypoint_loader_cpp/waypoint_loader_cpp" to ""
+[6.621s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/config
+[6.621s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/config/waypoints.yaml
+[6.621s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/ament_index/resource_index/package_run_dependencies/sentry_waypoint_loader_cpp
+[6.621s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/ament_index/resource_index/parent_prefix_path/sentry_waypoint_loader_cpp
+[6.621s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/ament_prefix_path.sh
+[6.622s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/ament_prefix_path.dsv
+[6.622s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/path.sh
+[6.622s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/path.dsv
+[6.622s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.bash
+[6.622s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.sh
+[6.622s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.zsh
+[6.623s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.dsv
+[6.623s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/package.dsv
+[6.623s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/ament_index/resource_index/packages/sentry_waypoint_loader_cpp
+[6.623s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/cmake/sentry_waypoint_loader_cppConfig.cmake
+[6.623s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/cmake/sentry_waypoint_loader_cppConfig-version.cmake
+[6.624s] -- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/package.xml
+[6.626s] Invoked command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/sentry_ws/install/control_panel:/opt/ros/humble /usr/bin/cmake --install /home/sentry_ws/src/build/sentry_waypoint_loader_cpp

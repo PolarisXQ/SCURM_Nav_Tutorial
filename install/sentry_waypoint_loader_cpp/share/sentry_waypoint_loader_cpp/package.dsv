@@ -1,0 +1,8 @@
+source;share/sentry_waypoint_loader_cpp/hook/cmake_prefix_path.ps1
+source;share/sentry_waypoint_loader_cpp/hook/cmake_prefix_path.dsv
+source;share/sentry_waypoint_loader_cpp/hook/cmake_prefix_path.sh
+source;share/sentry_waypoint_loader_cpp/local_setup.bash
+source;share/sentry_waypoint_loader_cpp/local_setup.dsv
+source;share/sentry_waypoint_loader_cpp/local_setup.ps1
+source;share/sentry_waypoint_loader_cpp/local_setup.sh
+source;share/sentry_waypoint_loader_cpp/local_setup.zsh

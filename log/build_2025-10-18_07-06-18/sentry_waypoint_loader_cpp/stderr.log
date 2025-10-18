@@ -1,0 +1,14 @@
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:[m[K In lambda function:
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:171:32:[m[K [01;31m[Kerror: [m[K‘[01m[Kusing element_type = struct nav2_msgs::action::FollowWaypoints_Result_<std::allocator<void> >[m[K’ {aka ‘[01m[Kstruct nav2_msgs::action::FollowWaypoints_Result_<std::allocator<void> >[m[K’} has no member named ‘[01m[Ksuccess[m[K’
+  171 |             if (result.result->[01;31m[Ksuccess[m[K) {
+      |                                [01;31m[K^~~~~~~[m[K
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:[m[K In lambda function:
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:194:33:[m[K [01;31m[Kerror: [m[K‘[01m[Kusing element_type = const struct nav2_msgs::action::FollowWaypoints_Feedback_<std::allocator<void> >[m[K’ {aka ‘[01m[Kconst struct nav2_msgs::action::FollowWaypoints_Feedback_<std::allocator<void> >[m[K’} has no member named ‘[01m[Kwaypoint_index[m[K’
+  194 |         int current = feedback->[01;31m[Kwaypoint_index[m[K + 1;  // 转为“第N个”（如0→1）
+      |                                 [01;31m[K^~~~~~~~~~~~~~[m[K
+[01m[K/home/sentry_ws/src/sentry_waypoint_loader_cpp/src/waypoint_loader.cpp:195:31:[m[K [01;31m[Kerror: [m[K‘[01m[Kusing element_type = const struct nav2_msgs::action::FollowWaypoints_Feedback_<std::allocator<void> >[m[K’ {aka ‘[01m[Kconst struct nav2_msgs::action::FollowWaypoints_Feedback_<std::allocator<void> >[m[K’} has no member named ‘[01m[Kwaypoint_total[m[K’
+  195 |         int total = feedback->[01;31m[Kwaypoint_total[m[K;
+      |                               [01;31m[K^~~~~~~~~~~~~~[m[K
+gmake[2]: *** [CMakeFiles/waypoint_loader_cpp.dir/build.make:76: CMakeFiles/waypoint_loader_cpp.dir/src/waypoint_loader.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/waypoint_loader_cpp.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

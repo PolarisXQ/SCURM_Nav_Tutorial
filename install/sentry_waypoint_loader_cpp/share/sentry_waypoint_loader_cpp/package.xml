@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>sentry_waypoint_loader_cpp</name>
+  <version>0.0.0</version>
+  <description>Waypoint loader (C++) for Nav2 waypoint_follower, parses YAML and sends to FollowWaypoints action</description>
+  <maintainer email="1294595013@qq.com">oh</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- 编译工具依赖：添加 ament_cmake_cpp 以支持 C++ 规范编译 -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_cpp</buildtool_depend>
+
+  <!-- 核心编译/运行依赖（代码中直接引用的包） -->
+  <depend>rclcpp</depend>                  <!-- C++ 节点基础 -->
+  <depend>rclcpp_action</depend>           <!-- 动作客户端依赖 -->
+  <depend>nav2_msgs</depend>               <!-- 包含 FollowWaypoints 动作定义 -->
+  <depend>geometry_msgs</depend>           <!-- 包含 PoseStamped 航点格式 -->
+
+  <!-- yaml-cpp 系统库依赖（编译时需找头文件，运行时需链接库） -->
+  <build_depend>yaml-cpp</build_depend>
+  <exec_depend>yaml-cpp</exec_depend>
+
+  <!-- 关键补充：运行时依赖 nav2_waypoint_follower（提供 follow_waypoints 动作服务器） -->
+  <exec_depend>nav2_waypoint_follower</exec_depend>
+
+  <!-- 测试依赖（若不需要测试，可删除这部分；保留不影响编译） -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <!-- 明确导出编译类型（规范 ROS 2 包识别） -->
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

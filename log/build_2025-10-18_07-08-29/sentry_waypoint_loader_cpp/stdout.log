@@ -1,0 +1,24 @@
+[35m[1mConsolidate compiler generated dependencies of target waypoint_loader_cpp[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/waypoint_loader_cpp.dir/src/waypoint_loader.cpp.o[0m
+[100%] [32m[1mLinking CXX executable waypoint_loader_cpp[0m
+[100%] Built target waypoint_loader_cpp
+-- Install configuration: ""
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/lib/sentry_waypoint_loader_cpp/waypoint_loader_cpp
+-- Set runtime path of "/home/sentry_ws/src/install/sentry_waypoint_loader_cpp/lib/sentry_waypoint_loader_cpp/waypoint_loader_cpp" to ""
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/config
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/config/waypoints.yaml
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/ament_index/resource_index/package_run_dependencies/sentry_waypoint_loader_cpp
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/ament_index/resource_index/parent_prefix_path/sentry_waypoint_loader_cpp
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/ament_prefix_path.sh
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/ament_prefix_path.dsv
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/path.sh
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/environment/path.dsv
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.bash
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.sh
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.zsh
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/local_setup.dsv
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/package.dsv
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/ament_index/resource_index/packages/sentry_waypoint_loader_cpp
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/cmake/sentry_waypoint_loader_cppConfig.cmake
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/cmake/sentry_waypoint_loader_cppConfig-version.cmake
+-- Installing: /home/sentry_ws/src/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/package.xml

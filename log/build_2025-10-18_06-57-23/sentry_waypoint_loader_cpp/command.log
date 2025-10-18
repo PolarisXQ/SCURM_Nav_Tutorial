@@ -1,0 +1,4 @@
+Invoking command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp': /usr/bin/cmake /home/sentry_ws/src/sentry_waypoint_loader_cpp -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/sentry_ws/src/install/sentry_waypoint_loader_cpp
+Invoked command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp' returned '0': /usr/bin/cmake /home/sentry_ws/src/sentry_waypoint_loader_cpp -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/sentry_ws/src/install/sentry_waypoint_loader_cpp
+Invoking command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp': /usr/bin/cmake --build /home/sentry_ws/src/build/sentry_waypoint_loader_cpp -- -j16 -l16
+Invoked command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp' returned '2': /usr/bin/cmake --build /home/sentry_ws/src/build/sentry_waypoint_loader_cpp -- -j16 -l16

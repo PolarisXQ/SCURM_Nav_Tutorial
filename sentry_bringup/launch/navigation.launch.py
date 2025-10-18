@@ -343,4 +343,24 @@ def generate_launch_description():
     ld.add_action(load_composable_nodes)
     ld.add_action(start_rviz)
 
+    # ======================
+    # Waypoint Loader Node
+    # ======================
+    waypoint_file = '/home/sentry_ws/src/sentry_waypoint_loader_cpp/config/waypoints.yaml'
+
+    waypoint_loader_node = Node(
+        package='sentry_waypoint_loader_cpp',
+        executable='waypoint_loader_cpp',
+        name='waypoint_loader_cpp',
+        output='screen',
+        parameters=[{
+            'waypoints_file': waypoint_file,
+            'startup_delay': 5.0
+        }]
+    )
+
+    # 把它加到 launch description 里
+    ld.add_action(waypoint_loader_node)
+
+
     return ld

@@ -1,0 +1,2 @@
+source;share/sentry_waypoint_loader_cpp/environment/ament_prefix_path.sh
+source;share/sentry_waypoint_loader_cpp/environment/path.sh

@@ -1,0 +1,25 @@
+-- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found rclcpp: 16.0.5 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.3 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found rclcpp_action: 16.0.5 (/opt/ros/humble/share/rclcpp_action/cmake)
+-- Found nav2_msgs: 1.1.13 (/opt/ros/humble/share/nav2_msgs/cmake)
+[31mCMake Error at CMakeLists.txt:25 (target_link_libraries):
+  The plain signature for target_link_libraries has already been used with
+  the target "waypoint_loader_cpp".  All uses of target_link_libraries with a
+  target must be either all-keyword or all-plain.
+
+  The uses of the plain signature are here:
+
+   * /opt/ros/humble/share/ament_cmake_target_dependencies/cmake/ament_target_dependencies.cmake:145 (target_link_libraries)
+
+
+[0m
+-- Configuring incomplete, errors occurred!
+See also "/home/sentry_ws/src/build/sentry_waypoint_loader_cpp/CMakeFiles/CMakeOutput.log".

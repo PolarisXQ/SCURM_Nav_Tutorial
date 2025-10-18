@@ -1,0 +1,133 @@
+[0.000000] (-) TimerEvent: {}
+[0.000336] (-) JobUnselected: {'identifier': 'auto_aim_interfaces'}
+[0.000543] (-) JobUnselected: {'identifier': 'behavior_ext_plugins'}
+[0.000661] (-) JobUnselected: {'identifier': 'behaviortree_cpp'}
+[0.000676] (-) JobUnselected: {'identifier': 'control_panel'}
+[0.001130] (-) JobUnselected: {'identifier': 'costmap_intensity'}
+[0.001166] (-) JobUnselected: {'identifier': 'fast_lio'}
+[0.001178] (-) JobUnselected: {'identifier': 'icp_relocalization'}
+[0.001192] (-) JobUnselected: {'identifier': 'livox_ros_driver2'}
+[0.001204] (-) JobUnselected: {'identifier': 'pb_rm_simulation'}
+[0.001214] (-) JobUnselected: {'identifier': 'rm_decision_cpp'}
+[0.001225] (-) JobUnselected: {'identifier': 'rm_interfaces'}
+[0.001235] (-) JobUnselected: {'identifier': 'ros2_livox_simulation'}
+[0.001246] (-) JobUnselected: {'identifier': 'sensor_scan_generation'}
+[0.001256] (-) JobUnselected: {'identifier': 'sentry_bringup'}
+[0.001266] (-) JobUnselected: {'identifier': 'terrain_analysis'}
+[0.001276] (-) JobUnselected: {'identifier': 'terrain_analysis_ext'}
+[0.001374] (-) JobUnselected: {'identifier': 'velocity_smoother_ext'}
+[0.001420] (sentry_waypoint_loader_cpp) JobQueued: {'identifier': 'sentry_waypoint_loader_cpp', 'dependencies': OrderedDict()}
+[0.001437] (sentry_waypoint_loader_cpp) JobStarted: {'identifier': 'sentry_waypoint_loader_cpp'}
+[0.086077] (sentry_waypoint_loader_cpp) JobProgress: {'identifier': 'sentry_waypoint_loader_cpp', 'progress': 'cmake'}
+[0.086295] (sentry_waypoint_loader_cpp) Command: {'cmd': ['/usr/bin/cmake', '/home/sentry_ws/src/sentry_waypoint_loader_cpp', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCMAKE_INSTALL_PREFIX=/home/sentry_ws/src/install/sentry_waypoint_loader_cpp'], 'cwd': '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp', 'env': OrderedDict([('HOSTNAME', 'ubuntu20'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/sentry_ws/install/velocity_smoother_ext/lib:/home/sentry_ws/install/ros2_livox_simulation/lib:/home/sentry_ws/install/rm_interfaces/lib:/home/sentry_ws/install/rm_decision_cpp/lib:/home/sentry_ws/install/fast_lio/lib:/home/sentry_ws/install/livox_ros_driver2/lib:/home/sentry_ws/install/costmap_intensity/lib:/home/sentry_ws/install/behaviortree_cpp/lib:/home/sentry_ws/install/behavior_ext_plugins/lib:/home/sentry_ws/install/auto_aim_interfaces/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib:/usr/share/gazebo/../../lib/x86_64-linux-gnu/gazebo-11/plugins:'), ('HOME', '/root'), ('OLDPWD', '/home/sentry_ws'), ('GAZEBO_MASTER_URI', 'http://localhost:11345'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/home/sentry_ws/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('TERM', 'xterm'), ('GAZEBO_MODEL_PATH', '/usr/share/gazebo/../../share/gazebo-11/models:'), ('ROS_LOCALHOST_ONLY', '0'), ('OGRE_RESOURCE_PATH', '/usr/lib/x86_64-linux-gnu/OGRE-1.9.0'), ('PATH', '/home/sentry_ws/install/behaviortree_cpp/bin:/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('DISPLAY', ':0'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/home/sentry_ws/install/velocity_smoother_ext:/home/sentry_ws/install/terrain_analysis_ext:/home/sentry_ws/install/terrain_analysis:/home/sentry_ws/install/sentry_bringup:/home/sentry_ws/install/sensor_scan_generation:/home/sentry_ws/install/ros2_livox_simulation:/home/sentry_ws/install/rm_interfaces:/home/sentry_ws/install/rm_decision_cpp:/home/sentry_ws/install/pcd_accumulator_cpp:/home/sentry_ws/install/pb_rm_simulation:/home/sentry_ws/install/fast_lio:/home/sentry_ws/install/livox_ros_driver2:/home/sentry_ws/install/icp_relocalization:/home/sentry_ws/install/costmap_intensity:/home/sentry_ws/install/control_panel:/home/sentry_ws/install/behaviortree_cpp:/home/sentry_ws/install/behavior_ext_plugins:/home/sentry_ws/install/auto_aim_interfaces:/opt/ros/humble'), ('GAZEBO_RESOURCE_PATH', '/usr/share/gazebo/../../share/gazebo-11:'), ('GAZEBO_MODEL_DATABASE_URI', 'http://models.gazebosim.org'), ('PWD', '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp'), ('LC_ALL', 'C.UTF-8'), ('GAZEBO_PLUGIN_PATH', '/usr/share/gazebo/../../lib/x86_64-linux-gnu/gazebo-11/plugins:'), ('PYTHONPATH', '/home/sentry_ws/install/rm_interfaces/local/lib/python3.10/dist-packages:/home/sentry_ws/install/fast_lio/local/lib/python3.10/dist-packages:/home/sentry_ws/install/livox_ros_driver2/local/lib/python3.10/dist-packages:/home/sentry_ws/install/control_panel/lib/python3.10/site-packages:/home/sentry_ws/install/auto_aim_interfaces/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/home/sentry_ws/install/velocity_smoother_ext:/home/sentry_ws/install/terrain_analysis_ext:/home/sentry_ws/install/terrain_analysis:/home/sentry_ws/install/sentry_bringup:/home/sentry_ws/install/sensor_scan_generation:/home/sentry_ws/install/ros2_livox_simulation:/home/sentry_ws/install/rm_interfaces:/home/sentry_ws/install/rm_decision_cpp:/home/sentry_ws/install/pcd_accumulator_cpp:/home/sentry_ws/install/pb_rm_simulation:/home/sentry_ws/install/fast_lio:/home/sentry_ws/install/livox_ros_driver2:/home/sentry_ws/install/icp_relocalization:/home/sentry_ws/install/costmap_intensity:/home/sentry_ws/install/behaviortree_cpp:/home/sentry_ws/install/behavior_ext_plugins:/home/sentry_ws/install/auto_aim_interfaces')]), 'shell': False}
+[0.102661] (-) TimerEvent: {}
+[0.203021] (-) TimerEvent: {}
+[0.303349] (-) TimerEvent: {}
+[0.403636] (-) TimerEvent: {}
+[0.504077] (-) TimerEvent: {}
+[0.604346] (-) TimerEvent: {}
+[0.704637] (-) TimerEvent: {}
+[0.809487] (-) TimerEvent: {}
+[0.909830] (-) TimerEvent: {}
+[1.010170] (-) TimerEvent: {}
+[1.110533] (-) TimerEvent: {}
+[1.210781] (-) TimerEvent: {}
+[1.311098] (-) TimerEvent: {}
+[1.411560] (-) TimerEvent: {}
+[1.492900] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[1.511681] (-) TimerEvent: {}
+[1.612001] (-) TimerEvent: {}
+[1.712529] (-) TimerEvent: {}
+[1.813021] (-) TimerEvent: {}
+[1.914259] (-) TimerEvent: {}
+[2.014604] (-) TimerEvent: {}
+[2.038705] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[2.114685] (-) TimerEvent: {}
+[2.175605] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[2.214787] (-) TimerEvent: {}
+[2.315133] (-) TimerEvent: {}
+[2.415481] (-) TimerEvent: {}
+[2.453542] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[2.460501] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[2.460868] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[2.478728] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[2.482341] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[2.515598] (-) TimerEvent: {}
+[2.615928] (-) TimerEvent: {}
+[2.630111] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[2.638639] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[2.638870] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[2.639619] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[2.716034] (-) TimerEvent: {}
+[2.816830] (-) TimerEvent: {}
+[2.917438] (-) TimerEvent: {}
+[3.017951] (-) TimerEvent: {}
+[3.042635] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[3.118107] (-) TimerEvent: {}
+[3.218638] (-) TimerEvent: {}
+[3.319000] (-) TimerEvent: {}
+[3.419825] (-) TimerEvent: {}
+[3.430646] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter \n'}
+[3.519920] (-) TimerEvent: {}
+[3.620197] (-) TimerEvent: {}
+[3.720620] (-) TimerEvent: {}
+[3.791543] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found rclcpp: 16.0.5 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[3.820699] (-) TimerEvent: {}
+[3.921222] (-) TimerEvent: {}
+[4.022485] (-) TimerEvent: {}
+[4.122773] (-) TimerEvent: {}
+[4.153998] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[4.182096] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[4.222869] (-) TimerEvent: {}
+[4.226239] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[4.270814] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[4.322403] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[4.322928] (-) TimerEvent: {}
+[4.423155] (-) TimerEvent: {}
+[4.523471] (-) TimerEvent: {}
+[4.556050] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[4.596633] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 6.2.3 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)\n'}
+[4.623569] (-) TimerEvent: {}
+[4.723862] (-) TimerEvent: {}
+[4.824245] (-) TimerEvent: {}
+[4.924625] (-) TimerEvent: {}
+[5.025686] (-) TimerEvent: {}
+[5.126391] (-) TimerEvent: {}
+[5.142600] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  \n'}
+[5.199555] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/humble/include  \n'}
+[5.226493] (-) TimerEvent: {}
+[5.288665] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[5.326596] (-) TimerEvent: {}
+[5.426916] (-) TimerEvent: {}
+[5.469492] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[5.527017] (-) TimerEvent: {}
+[5.627341] (-) TimerEvent: {}
+[5.727690] (-) TimerEvent: {}
+[5.751730] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[5.758045] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[5.827784] (-) TimerEvent: {}
+[5.854807] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n'}
+[5.855737] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[5.927960] (-) TimerEvent: {}
+[6.028544] (-) TimerEvent: {}
+[6.128873] (-) TimerEvent: {}
+[6.131328] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found rclcpp_action: 16.0.5 (/opt/ros/humble/share/rclcpp_action/cmake)\n'}
+[6.229134] (-) TimerEvent: {}
+[6.329465] (-) TimerEvent: {}
+[6.369743] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Found nav2_msgs: 1.1.13 (/opt/ros/humble/share/nav2_msgs/cmake)\n'}
+[6.429571] (-) TimerEvent: {}
+[6.529862] (-) TimerEvent: {}
+[6.630202] (-) TimerEvent: {}
+[6.730947] (-) TimerEvent: {}
+[6.831391] (-) TimerEvent: {}
+[6.897013] (sentry_waypoint_loader_cpp) StderrLine: {'line': b'\x1b[31mCMake Error at CMakeLists.txt:10 (target_link_libraries):\n'}
+[6.897259] (sentry_waypoint_loader_cpp) StderrLine: {'line': b'  Cannot specify link libraries for target "waypoint_loader_cpp" which is not\n'}
+[6.897338] (sentry_waypoint_loader_cpp) StderrLine: {'line': b'  built by this project.\n'}
+[6.897424] (sentry_waypoint_loader_cpp) StderrLine: {'line': b'\n'}
+[6.897494] (sentry_waypoint_loader_cpp) StderrLine: {'line': b'\x1b[0m\n'}
+[6.897561] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[6.897637] (sentry_waypoint_loader_cpp) StdoutLine: {'line': b'See also "/home/sentry_ws/src/build/sentry_waypoint_loader_cpp/CMakeFiles/CMakeOutput.log".\n'}
+[6.911873] (sentry_waypoint_loader_cpp) CommandEnded: {'returncode': 1}
+[6.931510] (-) TimerEvent: {}
+[7.010653] (sentry_waypoint_loader_cpp) JobEnded: {'identifier': 'sentry_waypoint_loader_cpp', 'rc': 1}
+[7.021196] (-) EventReactorShutdown: {}

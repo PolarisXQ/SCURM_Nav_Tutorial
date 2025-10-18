@@ -1,0 +1,27 @@
+[0.022s] Invoking command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp': /usr/bin/cmake /home/sentry_ws/src/sentry_waypoint_loader_cpp -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/sentry_ws/src/install/sentry_waypoint_loader_cpp
+[0.042s] -- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.218s] -- Found rclcpp: 16.0.5 (/opt/ros/humble/share/rclcpp/cmake)
+[0.256s] -- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.259s] -- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.266s] -- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.280s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.298s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.369s] -- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.371s] -- Found rmw_fastrtps_cpp: 6.2.3 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.586s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.756s] -- Found rclcpp_action: 16.0.5 (/opt/ros/humble/share/rclcpp_action/cmake)
+[0.862s] -- Found nav2_msgs: 1.1.13 (/opt/ros/humble/share/nav2_msgs/cmake)
+[1.216s] [31mCMake Error at CMakeLists.txt:25 (target_link_libraries):
+[1.216s]   The plain signature for target_link_libraries has already been used with
+[1.216s]   the target "waypoint_loader_cpp".  All uses of target_link_libraries with a
+[1.216s]   target must be either all-keyword or all-plain.
+[1.216s] 
+[1.216s]   The uses of the plain signature are here:
+[1.216s] 
+[1.216s]    * /opt/ros/humble/share/ament_cmake_target_dependencies/cmake/ament_target_dependencies.cmake:145 (target_link_libraries)
+[1.216s] 
+[1.216s] 
+[1.216s] [0m
+[1.381s] -- Configuring incomplete, errors occurred!
+[1.381s] See also "/home/sentry_ws/src/build/sentry_waypoint_loader_cpp/CMakeFiles/CMakeOutput.log".
+[1.392s] Invoked command in '/home/sentry_ws/src/build/sentry_waypoint_loader_cpp' returned '1': /usr/bin/cmake /home/sentry_ws/src/sentry_waypoint_loader_cpp -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/sentry_ws/src/install/sentry_waypoint_loader_cpp
