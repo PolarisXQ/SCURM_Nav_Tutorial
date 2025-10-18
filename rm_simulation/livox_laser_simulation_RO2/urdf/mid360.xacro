@@ -3,7 +3,8 @@
 
   <xacro:property name="M_PI" value="3.1415926"/> 
   <xacro:property name="laser_min_range" value="0.1"/>
-  <xacro:property name="laser_max_range" value="10.0"/>
+  <!-- <xacro:property name="laser_max_range" value="0.100001"/> -->
+  <xacro:property name="laser_max_range" value="10"/>
   <xacro:property name="samples" value="10000"/>
   <xacro:property name="resolution" value="0.01"/>
   <xacro:property name="noise_mean" value="0.0"/>

@@ -20,7 +20,7 @@ def generate_launch_description():
         description="Run mode: 'nav' (navigation) or 'mapping' (mapping)"
     )
     declare_delay = DeclareLaunchArgument(
-        'delay_after_sim', default_value='8.0',
+        'delay_after_sim', default_value='18.0',
         description='Seconds to wait after simulation starts before launching the rest'
     )
     declare_use_rviz = DeclareLaunchArgument(
