@@ -484,16 +484,30 @@ robot_state_publisher:
   ros__parameters:
     use_sim_time: True
 
+# waypoint_follower:
+#   ros__parameters:
+#     use_sim_time: True
+#     loop_rate: 20
+#     stop_on_failure: false
+#     waypoint_task_executor_plugin: "wait_at_waypoint"
+#     wait_at_waypoint:
+#       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
+#       enabled: True
+#       waypoint_pause_duration: 200
+
 waypoint_follower:
   ros__parameters:
     use_sim_time: True
-    loop_rate: 20
-    stop_on_failure: false
+    loop_rate: 20          # 反馈发布频率（20Hz，与原配置一致）
+    stop_on_failure: true
+    publish_feedback: true # 新增：启用反馈发布（关键参数）
+    waypoint_tolerance: 0.3
     waypoint_task_executor_plugin: "wait_at_waypoint"
     wait_at_waypoint:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
       enabled: True
-      waypoint_pause_duration: 200
+      waypoint_pause_duration: 2
+
 
 velocity_smoother:
   ros__parameters:

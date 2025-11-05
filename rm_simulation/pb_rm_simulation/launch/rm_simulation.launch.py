@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import os
+from pathlib import Path
 
-from ament_index_python.packages import get_package_share_directory, get_package_share_path
+from ament_index_python.packages import get_package_share_directory, get_package_share_path, get_package_prefix
 
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration, Command
@@ -12,7 +13,11 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch.conditions import LaunchConfigurationEquals
 from launch.conditions import IfCondition
-from launch.actions.append_environment_variable import AppendEnvironmentVariable
+# from launch.actions.append_environment_variable import AppendEnvironmentVariable
+from launch.actions import ExecuteProcess, AppendEnvironmentVariable
+from launch_ros.substitutions import FindPackageShare
+
+
 
 # Enum for world types
 class WorldType:
@@ -35,14 +40,12 @@ def get_world_config(world_type):
             'x': '4.7',
             # 'x': '4.0',
             'y': '-2.5',
-            'z': '0.5',
+            'z': '0.0',
             'roll':'0.0',
             'yaw': '0.0',  # 90 degrees in radians 3.1416
             'pitch': '0.0',
             # 'world_path': 'xzx_gazebo/robocon2026_new.world'
             'world_path': 'xzx_gazebo/robocon2026_map_foreset_wall.world'
-            # 'world_path': 'RMUL2024_world/RMUL2024_world.world'
-            # 'world_path': 'RMUL2024_world/RMUL2024_world_dynamic_obstacles.world'
         }
     }
     return world_configs.get(world_type, None)
@@ -54,15 +57,40 @@ def generate_launch_description():
 
     # Specify xacro path
     urdf_dir = get_package_share_path('pb_rm_simulation') / 'urdf' / 'simulation_waking_robot.xacro'
+    # urdf_dir = Path('/home/sentry_ws/src/rm_simulation/pb_rm_simulation/RC_vision_2026/gazebo_for_humble/src/fishbot_description/urdf/point_cloud.urdf')
+    # # 先检查文件是否存在，再读取（顺序修正）
+    # if not urdf_dir.exists():
+    #     raise FileNotFoundError(f"URDF 文件不存在！请检查路径：{urdf_dir}")
+    
+    # # 读取 URDF 文件内容（此时路径已存在，不会报错）
+    # with open(urdf_dir, 'r') as f:
+    #     robot_description_content = f.read()
+
 
     # Create the launch configuration variables
     use_sim_time = LaunchConfiguration('use_sim_time')
     use_rviz = LaunchConfiguration('rviz', default='true')
+    use_joint_state_publisher = LaunchConfiguration('use_joint_state_publisher', default='false')
 
     # Set Gazebo plugin path
     append_enviroment = AppendEnvironmentVariable(
         'GAZEBO_PLUGIN_PATH',
         os.path.join(os.path.join(get_package_share_directory('pb_rm_simulation'), 'meshes', 'obstacles', 'obstacle_plugin', 'lib'))
+    )
+
+    # 设置robot的网格路径
+    mesh_path = "/home/sentry_ws/src/rm_simulation/pb_rm_simulation/RC_vision_2026/gazebo_for_humble/install/fishbot_description/share/fishbot_description/meshes"
+
+    # 在当前 Python 进程环境中确保包含 mesh_path（影响当前进程）
+    if 'GAZEBO_MODEL_PATH' in os.environ:
+        os.environ['GAZEBO_MODEL_PATH'] += os.pathsep + mesh_path
+    else:
+        os.environ['GAZEBO_MODEL_PATH'] = "/usr/share/gazebo-11/models" + os.pathsep + mesh_path
+
+    # 通过 Launch 的 AppendEnvironmentVariable 确保子进程（gzserver/gzclient）也能继承该路径
+    append_gazebo_model_path = AppendEnvironmentVariable(
+        name='GAZEBO_MODEL_PATH',
+        value=':' + mesh_path
     )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -83,6 +111,12 @@ def generate_launch_description():
         description='Full path to the RVIZ config file to use'
     )
 
+    declare_use_joint_state_publisher = DeclareLaunchArgument(
+        'use_joint_state_publisher',
+        default_value='false',
+        description='Whether to start joint_state_publisher (default false). Set true only if you need it (e.g. no hardware/plugin publishing /joint_states).'
+    )
+
     # Specify the actions
     gazebo_client_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py')),
@@ -99,9 +133,18 @@ def generate_launch_description():
             'robot_description': ParameterValue(
                 Command(['xacro ', str(urdf_dir)]), value_type=str
             ),
+            # 'robot_description': robot_description_content  # 直接传入 URDF 内容
         }],
         output='screen'
     )
+    # start_joint_state_publisher_cmd = Node(
+    #     package='joint_state_publisher',
+    #     executable='joint_state_publisher',
+    #     name='joint_state_publisher',
+    #     # 只有当 use_joint_state_publisher 为 true 时才会启动，避免和插件发布的 /joint_states 冲突
+    #     condition=IfCondition(LaunchConfiguration('use_joint_state_publisher')),
+    #     output='screen'
+    # )
 
     start_robot_state_publisher_cmd = Node(
         package='robot_state_publisher',
@@ -112,6 +155,8 @@ def generate_launch_description():
             'robot_description': ParameterValue(
                 Command(['xacro ', str(urdf_dir)]), value_type=str
             ),
+            # 'robot_description': ParameterValue(robot_description_content, value_type=str)
+            # 'robot_description': robot_description_content  # 直接传入 URDF 内容
         }],
         output='screen'
     )
@@ -159,10 +204,14 @@ def generate_launch_description():
 
     # Set environment variables
     ld.add_action(append_enviroment)
+    ld.add_action(append_gazebo_model_path)
 
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_world_cmd)
     ld.add_action(declare_rviz_config_file_cmd)
+    ld.add_action(declare_use_joint_state_publisher)
+
+
     ld.add_action(gazebo_client_launch)
     ld.add_action(start_joint_state_publisher_cmd)
     ld.add_action(start_robot_state_publisher_cmd)

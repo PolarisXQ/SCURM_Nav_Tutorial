@@ -1,182 +1,503 @@
-# 12个航点（基于准确基准点修正：MapX=世界X-4.75，MapY=世界Y+3.2）
-waypoints: [1, 4, 7, 8, 9, 12]
+# 12个原始航点 + 48个边界点（共60个），坐标偏移规则：
+# 前：Y轴+0.5；后：Y轴-0.5；左：X轴-0.5；右：X轴+0.5
+# 基准转换：MapX=世界X-4.75，MapY=世界Y+3.2
+prepoints: [
+  -2,-2_front,-2_back,-2_left,-2_right,
+  -1,-1_front,-1_back,-1_left,-1_right,
+  0,0_front,0_back,0_left,0_right,
+  1,1_front,1_back,1_left,1_right,
+  2,2_front,2_back,2_left,2_right,
+  3,3_front,3_back,3_left,3_right,
+  4,4_front,4_back,4_left,4_right,
+  5,5_front,5_back,5_left,5_right,
+  6,6_front,6_back,6_left,6_right,
+  7,7_front,7_back,7_left,7_right,
+  8,8_front,8_back,8_left,8_right,
+  9,9_front,9_back,9_left,9_right,
+  10,10_front,10_back,10_left,10_right,
+  11,11_front,11_back,11_left,11_right,
+  12,12_front,12_back,12_left,12_right
+]
+waypoints: [-1,2]
 
-# 1号：第一排右角（用户提供准确坐标）
+# ==============================================
+# 第0排航点（原始Y=-0.15）
+# ==============================================
+# -2号：第0排右角（原始点）
+-2:
+  header:
+    frame_id: "map"
+  pose:
+    position: {x: -0.55, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -2号-前（Y+0.5 → 0.35）
+-2_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 0.35, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -2号-后（Y-0.5 → -0.65）
+-2_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: -0.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -2号-左（X-0.5 → -1.05）
+-2_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.05, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -2号-右（X+0.5 → -0.05）
+-2_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.05, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+
+# -1号：第0排中间（原始点）
+-1:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -1号-前（Y+0.5 → 0.35）
+-1_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 0.35, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -1号-后（Y-0.5 → -0.65）
+-1_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: -0.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -1号-左（X-0.5 → -2.25）
+-1_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.25, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# -1号-右（X+0.5 → -1.25）
+-1_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.25, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+
+# 0号：第0排左角（原始点）
+0:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 0号-前（Y+0.5 → 0.35）
+0_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 0.35, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 0号-后（Y-0.5 → -0.65）
+0_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: -0.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 0号-左（X-0.5 → -3.45）
+0_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -3.45, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 0号-右（X+0.5 → -2.45）
+0_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.45, y: -0.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+
+# ==============================================
+# 第一排航点（原始Y=1.05）
+# ==============================================
+# 1号：第一排右角（原始点）
 1:
   header:
     frame_id: "map"
   pose:
-    position:
-      x: -0.55       # 准确值（用户确认）
-      y: 1.05        # 准确值（用户确认）
-      z: 0.0
-    orientation:     # 保持y正方向（向上）
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -0.55, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 1号-前（Y+0.5 → 1.55）
+1_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 1.55, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 1号-后（Y-0.5 → 0.55）
+1_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 0.55, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 1号-左（X-0.5 → -1.05）
+1_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.05, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 1号-右（X+0.5 → -0.05）
+1_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.05, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 2号：第一排中间（与1号X差1.2米，Y相同）
+# 2号：第一排中间（原始点）
 2:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -1.75       # 世界X=3.0 → 3.0-4.75=-1.75（与1号X差1.2米）
-      y: 1.05        # 第一排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -1.75, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 2号-前（Y+0.5 → 1.55）
+2_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 1.55, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 2号-后（Y-0.5 → 0.55）
+2_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 0.55, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 2号-左（X-0.5 → -2.25）
+2_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.25, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 2号-右（X+0.5 → -1.25）
+2_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.25, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 3号：第一排左角（与2号X差1.2米，Y相同）
+# 3号：第一排左角（原始点）
 3:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -2.95       # 世界X=1.8 → 1.8-4.75=-2.95（与2号X差1.2米）
-      y: 1.05        # 第一排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -2.95, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 3号-前（Y+0.5 → 1.55）
+3_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 1.55, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 3号-后（Y-0.5 → 0.55）
+3_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 0.55, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 3号-左（X-0.5 → -3.45）
+3_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -3.45, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 3号-右（X+0.5 → -2.45）
+3_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.45, y: 1.05, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 4号：第二排右角（与1号X相同，Y差1.2米）
+# ==============================================
+# 第二排航点（原始Y=2.25）
+# ==============================================
+# 4号：第二排右角（原始点）
 4:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -0.55       # 与1号X相同（世界X=4.2 → 4.2-4.75=-0.55）
-      y: 2.25        # 世界Y=-0.95 → -0.95+3.2=2.25（与1号Y差1.2米）
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -0.55, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 4号-前（Y+0.5 → 2.75）
+4_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 2.75, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 4号-后（Y-0.5 → 1.75）
+4_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 1.75, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 4号-左（X-0.5 → -1.05）
+4_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.05, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 4号-右（X+0.5 → -0.05）
+4_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.05, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 5号：第二排中间（与2号X相同，Y相同）
+# 5号：第二排中间（原始点）
 5:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -1.75       # 与2号X相同（世界X=3.0 → 3.0-4.75=-1.75）
-      y: 2.25        # 第二排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -1.75, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 5号-前（Y+0.5 → 2.75）
+5_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 2.75, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 5号-后（Y-0.5 → 1.75）
+5_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 1.75, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 5号-左（X-0.5 → -2.25）
+5_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.25, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 5号-右（X+0.5 → -1.25）
+5_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.25, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 6号：第二排左角（与3号X相同，Y相同）
+# 6号：第二排左角（原始点）
 6:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -2.95       # 与3号X相同（世界X=1.8 → 1.8-4.75=-2.95）
-      y: 2.25        # 第二排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -2.95, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 6号-前（Y+0.5 → 2.75）
+6_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 2.75, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 6号-后（Y-0.5 → 1.75）
+6_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 1.75, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 6号-左（X-0.5 → -3.45）
+6_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -3.45, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 6号-右（X+0.5 → -2.45）
+6_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.45, y: 2.25, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 7号：第三排右角（与1号X相同，Y差1.2米）
+# ==============================================
+# 第三排航点（原始Y=3.45）
+# ==============================================
+# 7号：第三排右角（原始点）
 7:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -0.55       # 与1号X相同（世界X=4.2 → 4.2-4.75=-0.55）
-      y: 3.45        # 世界Y=0.25 → 0.25+3.2=3.45（与4号Y差1.2米）
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -0.55, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 7号-前（Y+0.5 → 3.95）
+7_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 3.95, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 7号-后（Y-0.5 → 2.95）
+7_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 2.95, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 7号-左（X-0.5 → -1.05）
+7_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.05, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 7号-右（X+0.5 → -0.05）
+7_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.05, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 8号：第三排中间（与2号X相同，Y相同）
+# 8号：第三排中间（原始点）
 8:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -1.75       # 与2号X相同（世界X=3.0 → 3.0-4.75=-1.75）
-      y: 3.45        # 第三排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -1.75, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 8号-前（Y+0.5 → 3.95）
+8_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 3.95, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 8号-后（Y-0.5 → 2.95）
+8_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 2.95, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 8号-左（X-0.5 → -2.25）
+8_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.25, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 8号-右（X+0.5 → -1.25）
+8_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.25, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 9号：第三排左角（与3号X相同，Y相同）
+# 9号：第三排左角（原始点）
 9:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -2.95       # 与3号X相同（世界X=1.8 → 1.8-4.75=-2.95）
-      y: 3.45        # 第三排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -2.95, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 9号-前（Y+0.5 → 3.95）
+9_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 3.95, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 9号-后（Y-0.5 → 2.95）
+9_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 2.95, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 9号-左（X-0.5 → -3.45）
+9_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -3.45, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 9号-右（X+0.5 → -2.45）
+9_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.45, y: 3.45, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 10号：第四排右角（与1号X相同，Y差1.2米）
+# ==============================================
+# 第四排航点（原始Y=4.65）
+# ==============================================
+# 10号：第四排右角（原始点）
 10:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -0.55       # 与1号X相同（世界X=4.2 → 4.2-4.75=-0.55）
-      y: 4.65        # 世界Y=1.45 → 1.45+3.2=4.65（与7号Y差1.2米）
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -0.55, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 10号-前（Y+0.5 → 5.15）
+10_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 5.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 10号-后（Y-0.5 → 4.15）
+10_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.55, y: 4.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 10号-左（X-0.5 → -1.05）
+10_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.05, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 10号-右（X+0.5 → -0.05）
+10_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -0.05, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 11号：第四排中间（与2号X相同，Y相同）
+# 11号：第四排中间（原始点）
 11:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -1.75       # 与2号X相同（世界X=3.0 → 3.0-4.75=-1.75）
-      y: 4.65        # 第四排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -1.75, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 11号-前（Y+0.5 → 5.15）
+11_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 5.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 11号-后（Y-0.5 → 4.15）
+11_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.75, y: 4.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 11号-左（X-0.5 → -2.25）
+11_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.25, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 11号-右（X+0.5 → -1.25）
+11_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -1.25, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
 
-# 12号：第四排左角（与3号X相同，Y相同）
+# 12号：第四排左角（原始点）
 12:
-  header:
-    frame_id: "map"
+  header: {frame_id: "map"}
   pose:
-    position:
-      x: -2.95       # 与3号X相同（世界X=1.8 → 1.8-4.75=-2.95）
-      y: 4.65        # 第四排Y值统一
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.7071
-      w: 0.7071
+    position: {x: -2.95, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 12号-前（Y+0.5 → 5.15）
+12_front:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 5.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 12号-后（Y-0.5 → 4.15）
+12_back:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.95, y: 4.15, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 12号-左（X-0.5 → -3.45）
+12_left:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -3.45, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+# 12号-右（X+0.5 → -2.45）
+12_right:
+  header: {frame_id: "map"}
+  pose:
+    position: {x: -2.45, y: 4.65, z: 0.0}
+    orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
