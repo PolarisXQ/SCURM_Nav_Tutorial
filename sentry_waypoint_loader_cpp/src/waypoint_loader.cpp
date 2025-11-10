@@ -1,691 +1,464 @@
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp_action/rclcpp_action.hpp>
-#include <tf2_ros/buffer.h>          
-#include <tf2_ros/transform_listener.h>
-#include <tf2/LinearMath/Quaternion.h>
-
-#include <nav2_msgs/action/follow_waypoints.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geometry_msgs/msg/twist.hpp>
-
+#include "/home/sentry_ws/src/sentry_waypoint_loader_cpp/include/waypoint_loader.hpp"
 #include <yaml-cpp/yaml.h>
-
-#include <chrono>
 #include <fstream>
-#include <memory>
-#include <string>
-#include <vector>
-#include <map>
-#include <mutex>
 #include <cmath>
+#include <iostream>
 
+using namespace sentry_waypoint_loader_cpp;
 using namespace std::chrono_literals;
 
-namespace sentry_waypoint_loader_cpp {
-
-class WaypointLoader : public rclcpp::Node
-{
-public:
-  using FollowWaypoints = nav2_msgs::action::FollowWaypoints;
-  using GoalHandleFollow = rclcpp_action::ClientGoalHandle<FollowWaypoints>;
-
-  WaypointLoader(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
-  : Node("waypoint_loader_cpp", options),
-    waypoints_file_(""),
-    startup_delay_(6.0),
-    rise_trigger_wp_index_(1),
-    rise_trigger_distance_(0.5),
-    waypoint_arrival_distance_(0.3),
-    rise_triggered_(false),
-    last_completed_waypoint_(-1),
-    tf_buffer_(std::make_shared<tf2_ros::Buffer>(this->get_clock())),
-    tf_listener_(*tf_buffer_),
-    wp1_main_(),  // 航点变量先初始化
-    wp2_trans1_(),
-    wp3_trans2_(),
-    wp4_main_(),
-    current_goal_handle_(nullptr),  // 再初始化 current_goal_handle_
-    goal_sent_(false),
-    goal_succeeded_(false),
-    goal_send_failed_(false),
-    goal_send_start_time_(this->now())
-  {
-    // 声明参数
-    this->declare_parameter<std::string>(
-      "waypoints_file", 
-      std::string(get_home() + "/sentry_ws/src/sentry_waypoint_loader_cpp/config/waypoints.yaml"),
-      rcl_interfaces::msg::ParameterDescriptor{}
-        .set__description("航点YAML文件的绝对路径")
-    );
-    this->declare_parameter<double>("startup_delay", 6.0);
-    this->declare_parameter<int>("rise_trigger_wp_index", 1);
-    this->declare_parameter<double>("rise_trigger_distance", 0.5);
-    this->declare_parameter<double>(
-      "pre_trans2_wait_time", 3.0,
-      rcl_interfaces::msg::ParameterDescriptor{}
-        .set__description("发布第二个过渡航点前的停留时间")
-    );
-    this->declare_parameter<double>(
-      "waypoint_arrival_distance", 0.3,
-      rcl_interfaces::msg::ParameterDescriptor{}
-        .set__description("进入此距离范围即判定为到达航点（米）")
-    );
-
-    // 获取参数
-    waypoints_file_ = this->get_parameter("waypoints_file").as_string();
-    startup_delay_ = this->get_parameter("startup_delay").as_double();
-    rise_trigger_wp_index_ = this->get_parameter("rise_trigger_wp_index").as_int();
-    rise_trigger_distance_ = this->get_parameter("rise_trigger_distance").as_double();
-    pre_trans2_wait_time_ = this->get_parameter("pre_trans2_wait_time").as_double();
-    waypoint_arrival_distance_ = this->get_parameter("waypoint_arrival_distance").as_double();
-
-    RCLCPP_INFO(
-      get_logger(), 
-      "初始化完成：航点到达阈值=%.2fm，上升触发距离=%.2fm", 
-      waypoint_arrival_distance_, rise_trigger_distance_
-    );
-
-    // 创建通信对象
-    cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
-    follow_action_client_ = rclcpp_action::create_client<FollowWaypoints>(this, "/follow_waypoints");
-
-    // 启动延迟定时器
+// 构造函数：初始化节点、参数与组件
+WaypointLoader::WaypointLoader(const rclcpp::NodeOptions& options) 
+    : Node("sentry_waypoint_loader_node", options) {
+    RCLCPP_INFO(this->get_logger(), "初始化航点加载器节点...");
+    init_parameters();   // 第一步：获取参数
+    init_components();   // 第二步：初始化组件
+    // 第三步：启动延迟定时器（延迟后开始解析航点）
     start_timer_ = this->create_wall_timer(
-      std::chrono::duration<double>(startup_delay_),
-      [this]() {
-        start_timer_->cancel();
-        this->on_start_timer();
-      });
+        std::chrono::duration<double>(start_delay_),
+        std::bind(&WaypointLoader::on_start_timer, this)
+    );
+}
 
-    // 轮询定时器：替代临时执行器，检查目标状态
-    poll_timer_ = this->create_wall_timer(
-      100ms,  // 每100ms检查一次
-      [this]() { this->poll_goal_status(); });
-  }
+// 初始化节点参数（从参数服务器或默认值获取）
+void WaypointLoader::init_parameters() {
+    // 1. 声明参数并设置默认值
+    this->declare_parameter("start_delay", 2.0, 
+        rcl_interfaces::msg::ParameterDescriptor{}
+            .set__description("节点启动后延迟多久开始解析航点（单位：秒）"));
+    this->declare_parameter("waypoints_file", 
+        std::string(getenv("HOME") + std::string("/sentry_ws/src/sentry_waypoint_loader_cpp/config/waypoints.yaml")),
+        rcl_interfaces::msg::ParameterDescriptor{}
+            .set__description("获取航点YAML文件的绝对路径"));
+    
+    // 2. 获取参数值
+    this->get_parameter("start_delay", start_delay_);
+    this->get_parameter("waypoints_file", waypoints_path_);
 
-private:
-  // 成员变量
-  std::string waypoints_file_;
-  double startup_delay_;
-  int rise_trigger_wp_index_;
-  double rise_trigger_distance_;
-  double waypoint_arrival_distance_;
-  double pre_trans2_wait_time_;
-  bool rise_triggered_;
-  int last_completed_waypoint_;
-  std::mutex waypoint_mutex_;
-  rclcpp_action::Client<FollowWaypoints>::SharedPtr follow_action_client_;
-  rclcpp::TimerBase::SharedPtr start_timer_;
-  rclcpp::TimerBase::SharedPtr poll_timer_;  // 轮询定时器
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
-  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
-  tf2_ros::TransformListener tf_listener_;
-  GoalHandleFollow::SharedPtr current_goal_handle_;  // 先声明此变量
+    RCLCPP_INFO(this->get_logger(), "参数初始化完成：");
+    RCLCPP_INFO(this->get_logger(), "  - 启动延迟：%.1f秒", start_delay_);
+    RCLCPP_INFO(this->get_logger(), "  - YAML路径：%s", waypoints_path_.c_str());
+}
 
-  // 航点存储
-  geometry_msgs::msg::PoseStamped wp1_main_;
-  geometry_msgs::msg::PoseStamped wp2_trans1_;
-  geometry_msgs::msg::PoseStamped wp3_trans2_;
-  geometry_msgs::msg::PoseStamped wp4_main_;
+// 初始化Action客户端、速度发布者等组件
+void WaypointLoader::init_components() {
+    // 1. 初始化FollowWaypoints Action客户端
+    follow_action_client_ = rclcpp_action::create_client<FollowWaypoints>(
+        this, "/follow_waypoints");  // 对应Nav2的waypoint_follower动作话题
 
-  geometry_msgs::msg::PoseStamped current_target_pose_;  // 当前目标航点
-  bool goal_sent_;  // 目标是否已发送
-  bool goal_succeeded_;  // 目标是否成功完成
-  int current_wp_index_;  // 当前处理的航点索引
-  bool goal_send_failed_;  // 标记目标发送失败
-  rclcpp::Time goal_send_start_time_;  // 记录目标发送开始时间（用于超时判断）
+    // 2. 初始化速度控制发布者（用于Z轴上升）
+    cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
+        "/cmd_vel", 10);  // 队列大小10，确保消息不丢失
 
+    RCLCPP_INFO(this->get_logger(), 
+        "组件初始化完成：FollowWaypoints Action客户端、速度发布者已创建");
+}
 
-  // 主航点关系枚举
-  enum class WaypointRelation {
-    RELATION_PLUS_3, RELATION_MINUS_3, RELATION_PLUS_1, RELATION_MINUS_1, RELATION_ERROR
-  };
-
-  // 获取HOME目录
-  static std::string get_home()
-  {
-    const char * h = std::getenv("HOME");
-    return h ? std::string(h) : std::string(".");
-  }
-
-  // 等待Action服务器
-  bool wait_for_action_server_with_timeout(double timeout_s = 30.0)
-  {
-    auto t0 = this->now();
-    while (!follow_action_client_->wait_for_action_server(1s)) {
-      auto elapsed = (this->now() - t0).seconds();
-      if (elapsed >= timeout_s) {
-        RCLCPP_ERROR(get_logger(), "等待FollowWaypoints服务器超时（%ds）", static_cast<int>(timeout_s));
+// 解析YAML文件中的所有航点（主航点+过渡航点）
+bool WaypointLoader::parse_all_waypoints_from_yaml() {
+    // 打开YAML文件
+    std::ifstream yaml_file(waypoints_path_);
+    if (!yaml_file.is_open()) {
+        RCLCPP_ERROR(this->get_logger(), "无法打开YAML文件：%s", waypoints_path_.c_str());
         return false;
-      }
-      RCLCPP_INFO(get_logger(), "等待FollowWaypoints服务器...（已等待%.1fs）", elapsed);
+    }
+
+    // 加载YAML根节点
+    YAML::Node root;
+    try {
+        root = YAML::Load(yaml_file);
+    } catch (const YAML::Exception& e) {
+        RCLCPP_ERROR(this->get_logger(), "YAML解析错误：%s", e.what());
+        return false;
+    }
+
+    // 读取prepoints（航点ID列表，用于加载所有航点数据，保留此逻辑）
+    if (!root["prepoints"]) {
+        RCLCPP_ERROR(this->get_logger(), "YAML中缺少prepoints字段（航点ID列表）");
+        return false;
+    }
+    prepoints_ = root["prepoints"].as<std::vector<std::string>>();
+    RCLCPP_INFO(this->get_logger(), "读取到%d个航点ID（prepoints）", (int)prepoints_.size());
+
+    // 读取所有航点的位姿数据（主+过渡，保留此逻辑）
+    all_wp_map_.clear();  // 清空之前的数据
+    for (const auto& wp_id_str : prepoints_) {
+        if (!root[wp_id_str]) {
+            RCLCPP_WARN(this->get_logger(), "YAML中缺少航点：%s，跳过", wp_id_str.c_str());
+            continue;
+        }
+
+        // 解析航点位姿（保留此逻辑）
+        geometry_msgs::msg::PoseStamped wp;
+        try {
+            wp.header.frame_id = root[wp_id_str]["header"]["frame_id"].as<std::string>();
+            wp.header.stamp = this->get_clock()->now();
+            wp.pose.position.x = root[wp_id_str]["pose"]["position"]["x"].as<double>();
+            wp.pose.position.y = root[wp_id_str]["pose"]["position"]["y"].as<double>();
+            wp.pose.position.z = root[wp_id_str]["pose"]["position"]["z"].as<double>();
+            wp.pose.orientation.x = root[wp_id_str]["pose"]["orientation"]["x"].as<double>();
+            wp.pose.orientation.y = root[wp_id_str]["pose"]["orientation"]["y"].as<double>();
+            wp.pose.orientation.z = root[wp_id_str]["pose"]["orientation"]["z"].as<double>();
+            wp.pose.orientation.w = root[wp_id_str]["pose"]["orientation"]["w"].as<double>();
+
+            all_wp_map_[wp_id_str] = wp;
+            RCLCPP_DEBUG(this->get_logger(), "解析航点：%s → (X:%.2f, Y:%.2f)", 
+                wp_id_str.c_str(), wp.pose.position.x, wp.pose.position.y);
+        } catch (const YAML::Exception& e) {
+            RCLCPP_ERROR(this->get_logger(), "解析航点%s失败：%s", wp_id_str.c_str(), e.what());
+            return false;
+        }
+    }
+
+    // 读取主航点列表（waypoints字段），并新增main_waypoint_ids_存储ID
+    if (!root["waypoints"]) {
+        RCLCPP_ERROR(this->get_logger(), "YAML中缺少waypoints字段（主航点ID列表）");
+        return false;
+    }
+    std::vector<int> main_wp_ids = root["waypoints"].as<std::vector<int>>();
+    waypoints_.clear();         // 清空主航点位姿列表
+    main_waypoint_ids_.clear(); // 清空主航点ID列表
+
+    for (int wp_id : main_wp_ids) {
+        std::string wp_id_str = std::to_string(wp_id);
+        if (!all_wp_map_.count(wp_id_str)) {
+            RCLCPP_ERROR(this->get_logger(), "主航点ID%d在YAML中不存在", wp_id);
+            return false;
+        }
+        // 存储主航点位姿
+        waypoints_.push_back(all_wp_map_[wp_id_str]);
+        // 同步存储主航点ID
+        main_waypoint_ids_.push_back(wp_id);
+
+        RCLCPP_INFO(this->get_logger(), "添加主航点：ID%d → (X:%.2f, Y:%.2f)", 
+            wp_id, all_wp_map_[wp_id_str].pose.position.x, all_wp_map_[wp_id_str].pose.position.y);
+    }
+
+    if (waypoints_.empty()) {
+        RCLCPP_ERROR(this->get_logger(), "主航点列表为空，无法启动导航");
+        return false;
+    }
+    RCLCPP_INFO(this->get_logger(), "YAML解析完成：共%d个主航点，%d个总航点", 
+        (int)waypoints_.size(), (int)all_wp_map_.size());
+    return true;
+}
+
+
+// 判断两个主航点间的关系，匹配过渡点
+WaypointLoader::WaypointRelation WaypointLoader::judge_waypoint_relation(int start_id, int end_id) {
+    int id_diff = end_id - start_id;
+
+    //左侧以及右侧无法离开梅林限制，直接写出节点id为了增加代码可读性，不建议取模计算
+    // 0,3,6,9,12 不能有+1关系（即不能作为start_id且end_id=start_id+1）
+    if (id_diff == 1) {
+        if (start_id == 0 || start_id == 3 || start_id == 6 || start_id == 9 || start_id == 12) {
+            RCLCPP_ERROR(this->get_logger(), "航点%d向左移动掉出梅林，行为禁止", start_id);
+            return WaypointRelation::RELATION_ERROR;
+        }
+    }
+    // -2,1,4,7,10 不能有-1关系（即不能作为start_id且end_id=start_id-1）
+    else if (id_diff == -1) {
+        if (start_id == -2 || start_id == 1 || start_id == 4 || start_id == 7 || start_id == 10) {
+            RCLCPP_ERROR(this->get_logger(), "航点%d向右移动掉出梅林，行为禁止", start_id);
+            return WaypointRelation::RELATION_ERROR;
+        }
+    }
+
+    if (id_diff == 3) {
+        return WaypointRelation::RELATION_PLUS_3;
+    } else if (id_diff == -3) {
+        return WaypointRelation::RELATION_MINUS_3;
+    } else if (id_diff == 1) {
+        return WaypointRelation::RELATION_PLUS_1;
+    } else if (id_diff == -1) {
+        return WaypointRelation::RELATION_MINUS_1;
+    } else {
+        RCLCPP_ERROR(this->get_logger(), "航点关系无效：start_id=%d, end_id=%d, 差值=%d", 
+            start_id, end_id, id_diff);
+        return WaypointRelation::RELATION_ERROR;
+    }
+}
+
+// 根据主航点关系获取两个过渡点
+bool WaypointLoader::get_transition_points(int start_id, int end_id, 
+    geometry_msgs::msg::PoseStamped& trans1, geometry_msgs::msg::PoseStamped& trans2) {
+    
+    // 判断航点关系
+    WaypointRelation relation = judge_waypoint_relation(start_id, end_id);
+    if (relation == WaypointRelation::RELATION_ERROR) {
+        return false;
+    }
+
+    // 生成过渡点ID（根据关系匹配_front/_back/_left/_right）
+    std::string tp1_id_str, tp2_id_str;
+    switch (relation) {
+        case WaypointRelation::RELATION_PLUS_3:
+            tp1_id_str = std::to_string(start_id) + "_front";
+            tp2_id_str = std::to_string(end_id) + "_back";
+            break;
+        case WaypointRelation::RELATION_MINUS_3:
+            tp1_id_str = std::to_string(start_id) + "_back";
+            tp2_id_str = std::to_string(end_id) + "_front";
+            break;
+        case WaypointRelation::RELATION_PLUS_1:
+            tp1_id_str = std::to_string(start_id) + "_left";
+            tp2_id_str = std::to_string(end_id) + "_right";
+            break;
+        case WaypointRelation::RELATION_MINUS_1:
+            tp1_id_str = std::to_string(start_id) + "_right";
+            tp2_id_str = std::to_string(end_id) + "_left";
+            break;
+        default:
+            return false;
+    }
+
+    // 从航点地图中获取过渡点位姿
+    if (!all_wp_map_.count(tp1_id_str)) {
+        RCLCPP_ERROR(this->get_logger(), "过渡点1不存在：%s", tp1_id_str.c_str());
+        return false;
+    }
+    if (!all_wp_map_.count(tp2_id_str)) {
+        RCLCPP_ERROR(this->get_logger(), "过渡点2不存在：%s", tp2_id_str.c_str());
+        return false;
+    }
+
+    trans1 = all_wp_map_[tp1_id_str];
+    trans2 = all_wp_map_[tp2_id_str];
+    RCLCPP_DEBUG(this->get_logger(), "生成过渡点：%s → %s", 
+        tp1_id_str.c_str(), tp2_id_str.c_str());
+    return true;
+}
+
+// 构建完整路径（主航点+过渡点：主→过1→过2→主→...）
+bool WaypointLoader::build_full_waypath() {
+    // 若主航点≤1，无需插入过渡点
+    if (waypoints_.size() < 2) {
+        full_waypoints_ = waypoints_;
+        RCLCPP_WARN(this->get_logger(), "主航点数量≤1，无需插入过渡点");
+        return true;
+    }
+
+    // 遍历主航点，插入过渡点
+    for (size_t i = 0; i < waypoints_.size() - 1; ++i) {
+        // 获取当前主航点与下一个主航点的ID
+        // 从main_waypoint_ids_中取当前和下一个主航点的ID
+        int start_id = main_waypoint_ids_[i];    // 第i个主航点ID
+        int end_id = main_waypoint_ids_[i+1];    // 第i+1个主航点ID
+        // int start_id = std::stoi(prepoints_[i]);  // prepoints与waypoints顺序一致
+        // int end_id = std::stoi(prepoints_[i+1]);
+        geometry_msgs::msg::PoseStamped trans1, trans2;
+
+        // 添加当前主航点
+        full_waypoints_.push_back(waypoints_[i]);
+        // 获取并添加两个过渡点
+        if (!get_transition_points(start_id, end_id, trans1, trans2)) {
+            RCLCPP_ERROR(this->get_logger(), "主航点%d→%d的过渡点生成失败，中断路径构建", start_id, end_id);
+            full_waypoints_.clear();
+            return false;
+        }
+        full_waypoints_.push_back(trans1);  // 过渡点1（执行Z轴上升）
+        full_waypoints_.push_back(trans2);  // 过渡点2（执行延迟2s）
+    }
+
+    // 添加最后一个主航点
+    full_waypoints_.push_back(waypoints_.back());
+
+    // 若最后一个主航点是10、11、12，即R2准备出梅林，额外添加其_front过渡点负责下降
+    int last_main_id = main_waypoint_ids_.back();
+    if (last_main_id == 10 || last_main_id == 11 || last_main_id == 12) {
+        std::string front_id_str = std::to_string(last_main_id) + "_front";
+        if (!all_wp_map_.count(front_id_str)) {
+            RCLCPP_ERROR(this->get_logger(), "最后一个主航点%d_front过渡航点不存在：%s", last_main_id, front_id_str.c_str());
+            full_waypoints_.clear();
+            return false;
+        }
+        // 添加_front过渡点
+        full_waypoints_.push_back(all_wp_map_[front_id_str]);
+        RCLCPP_INFO(this->get_logger(), "离开梅林航点%d,执行离开操作过渡航点已添加：%s", last_main_id, front_id_str.c_str());
+    }
+
+    // 打印完整路径信息
+    RCLCPP_INFO(this->get_logger(), "完整路径构建完成：共%d个航点", (int)full_waypoints_.size());
+    for (size_t i = 0; i < full_waypoints_.size(); ++i) {
+        RCLCPP_INFO(this->get_logger(), "  航点%d：(X:%.2f, Y:%.2f, 帧ID:%s)",
+            (int)i,
+            full_waypoints_[i].pose.position.x,
+            full_waypoints_[i].pose.position.y,
+            full_waypoints_[i].header.frame_id.c_str()
+        );
     }
     return true;
-  }
+}
 
-  // 判断主航点关系
-  WaypointRelation judge_waypoint_relation(int start_id, int end_id)
-  {
-    int diff = end_id - start_id;
-    if (diff == 3) return WaypointRelation::RELATION_PLUS_3;
-    if (diff == -3) return WaypointRelation::RELATION_MINUS_3;
-    if (diff == 1) return WaypointRelation::RELATION_PLUS_1;
-    if (diff == -1) return WaypointRelation::RELATION_MINUS_1;
-    RCLCPP_ERROR(get_logger(), "非法主航点关系：%d→%d（仅支持±1/±3）", start_id, end_id);
-    return WaypointRelation::RELATION_ERROR;
-  }
-
-  // 提取过渡节点
-  std::vector<geometry_msgs::msg::PoseStamped> get_transition_points(int start_id, int end_id)
-  {
-    std::vector<geometry_msgs::msg::PoseStamped> transition_points;
-    auto relation = judge_waypoint_relation(start_id, end_id);
-    if (relation == WaypointRelation::RELATION_ERROR) return transition_points;
-
-    std::string tp1_id, tp2_id;
-    switch (relation) {
-      case WaypointRelation::RELATION_PLUS_3:
-        tp1_id = std::to_string(start_id) + "_front";
-        tp2_id = std::to_string(end_id) + "_back";
-        break;
-      case WaypointRelation::RELATION_MINUS_3:
-        tp1_id = std::to_string(start_id) + "_back";
-        tp2_id = std::to_string(end_id) + "_front";
-        break;
-      case WaypointRelation::RELATION_PLUS_1:
-        tp1_id = std::to_string(start_id) + "_left";
-        tp2_id = std::to_string(end_id) + "_right";
-        break;
-      case WaypointRelation::RELATION_MINUS_1:
-        tp1_id = std::to_string(start_id) + "_right";
-        tp2_id = std::to_string(end_id) + "_left";
-        break;
-      default:
-        return transition_points;
-    }
-
-    std::map<std::string, geometry_msgs::msg::PoseStamped> all_wp_map_;
-    parse_all_waypoints_to_map(all_wp_map_);
-
-    if (all_wp_map_.find(tp1_id) != all_wp_map_.end()) {
-      transition_points.push_back(all_wp_map_[tp1_id]);
-      RCLCPP_INFO(get_logger(), "提取过渡点1：%s（坐标：%.2f, %.2f）", 
-                  tp1_id.c_str(), all_wp_map_[tp1_id].pose.position.x, all_wp_map_[tp1_id].pose.position.y);
-    } else {
-      RCLCPP_WARN(get_logger(), "过渡点1 %s 未找到", tp1_id.c_str());
-    }
-    if (all_wp_map_.find(tp2_id) != all_wp_map_.end()) {
-      transition_points.push_back(all_wp_map_[tp2_id]);
-      RCLCPP_INFO(get_logger(), "提取过渡点2：%s（坐标：%.2f, %.2f）", 
-                  tp2_id.c_str(), all_wp_map_[tp2_id].pose.position.x, all_wp_map_[tp2_id].pose.position.y);
-    } else {
-      RCLCPP_WARN(get_logger(), "过渡点2 %s 未找到", tp2_id.c_str());
-    }
-
-    return transition_points;
-  }
-
-  // 解析所有航点到map
-  void parse_all_waypoints_to_map(std::map<std::string, geometry_msgs::msg::PoseStamped>& all_wp_map)
-  {
-    try {
-      if (!std::ifstream(waypoints_file_)) {
-        RCLCPP_ERROR(get_logger(), "航点文件不存在：%s", waypoints_file_.c_str());
+// 启动延迟定时器回调：开始解析航点并启动导航
+void WaypointLoader::on_start_timer() {
+    RCLCPP_INFO(this->get_logger(), "启动延迟结束，开始解析航点...");
+    
+    // 解析YAML并构建完整路径
+    if (!parse_all_waypoints_from_yaml() || !build_full_waypath()) {
+        RCLCPP_ERROR(this->get_logger(), "航点解析或路径构建失败，无法启动导航");
         return;
-      }
-      YAML::Node yaml_node = YAML::LoadFile(waypoints_file_);
-
-      for (const auto& node : yaml_node) {
-        std::string wp_id = node.first.as<std::string>();
-        if (wp_id == "waypoints" || wp_id == "prepoints") continue;
-
-        YAML::Node wp = yaml_node[wp_id];
-        geometry_msgs::msg::PoseStamped pose;
-        pose.header.frame_id = wp["header"]["frame_id"].as<std::string>("map");
-        pose.header.stamp = this->now();
-        pose.pose.position.x = wp["pose"]["position"]["x"].as<double>(0.0);
-        pose.pose.position.y = wp["pose"]["position"]["y"].as<double>(0.0);
-        pose.pose.position.z = wp["pose"]["position"]["z"].as<double>(0.0);
-        pose.pose.orientation.x = wp["pose"]["orientation"]["x"].as<double>(0.0);
-        pose.pose.orientation.y = wp["pose"]["orientation"]["y"].as<double>(0.0);
-        pose.pose.orientation.z = wp["pose"]["orientation"]["z"].as<double>(0.0);
-        pose.pose.orientation.w = wp["pose"]["orientation"]["w"].as<double>(1.0);
-
-        all_wp_map[wp_id] = pose;
-      }
-    } catch (const YAML::BadFile& e) {
-      RCLCPP_ERROR(get_logger(), "打开YAML失败：%s", e.what());
-    } catch (const YAML::ParserException& e) {
-      RCLCPP_ERROR(get_logger(), "YAML格式错误：%s", e.what());
-    }
-  }
-
-  // 解析4个航点并单独赋值
-  bool parse_four_waypoints()
-  {
-    try {
-      if (!std::ifstream(waypoints_file_)) {
-        RCLCPP_ERROR(get_logger(), "航点文件不存在：%s", waypoints_file_.c_str());
-        return false;
-      }
-      YAML::Node yaml_node = YAML::LoadFile(waypoints_file_);
-      std::map<std::string, geometry_msgs::msg::PoseStamped> all_wp_map_;
-
-      for (const auto& node : yaml_node) {
-        std::string wp_id = node.first.as<std::string>();
-        if (wp_id == "waypoints" || wp_id == "prepoints") continue;
-
-        YAML::Node wp = yaml_node[wp_id];
-        geometry_msgs::msg::PoseStamped pose;
-        pose.header.frame_id = wp["header"]["frame_id"].as<std::string>("map");
-        pose.header.stamp = this->now();
-        pose.pose.position.x = wp["pose"]["position"]["x"].as<double>(0.0);
-        pose.pose.position.y = wp["pose"]["position"]["y"].as<double>(0.0);
-        pose.pose.position.z = wp["pose"]["position"]["z"].as<double>(0.0);
-        pose.pose.orientation.x = wp["pose"]["orientation"]["x"].as<double>(0.0);
-        pose.pose.orientation.y = wp["pose"]["orientation"]["y"].as<double>(0.0);
-        pose.pose.orientation.z = wp["pose"]["orientation"]["z"].as<double>(0.0);
-        pose.pose.orientation.w = wp["pose"]["orientation"]["w"].as<double>(1.0);
-
-        all_wp_map_[wp_id] = pose;
-        RCLCPP_INFO(get_logger(), "解析航点：%s（坐标：%.2f, %.2f）", 
-                    wp_id.c_str(), pose.pose.position.x, pose.pose.position.y);
-      }
-
-      if (!yaml_node["waypoints"]) {
-        RCLCPP_ERROR(get_logger(), "YAML缺少'waypoints'字段");
-        return false;
-      }
-      std::vector<std::string> main_wp_ids;
-      for (const auto& wp_name_node : yaml_node["waypoints"]) {
-        main_wp_ids.push_back(wp_name_node.as<std::string>());
-      }
-      if (main_wp_ids.size() < 2) {
-        RCLCPP_ERROR(get_logger(), "主航点数量不足（至少2个）");
-        return false;
-      }
-
-      int start_main_id = std::stoi(main_wp_ids[0]);
-      int end_main_id = std::stoi(main_wp_ids[1]);
-      auto transition_points = get_transition_points(start_main_id, end_main_id);
-
-      // 主航点1
-      if (all_wp_map_.find(main_wp_ids[0]) != all_wp_map_.end()) {
-        wp1_main_ = all_wp_map_[main_wp_ids[0]];
-        RCLCPP_INFO(get_logger(), "单独解析：主航点1（%s）（坐标：%.2f, %.2f）", 
-                    main_wp_ids[0].c_str(), wp1_main_.pose.position.x, wp1_main_.pose.position.y);
-      } else {
-        RCLCPP_ERROR(get_logger(), "主航点1 %s 未找到", main_wp_ids[0].c_str());
-        return false;
-      }
-
-      // 过渡点1
-      if (transition_points.size() >= 1) {
-        wp2_trans1_ = transition_points[0];
-        RCLCPP_INFO(get_logger(), "单独解析：过渡点1（坐标：%.2f, %.2f）", 
-                    wp2_trans1_.pose.position.x, wp2_trans1_.pose.position.y);
-      } else {
-        RCLCPP_ERROR(get_logger(), "过渡点1未找到");
-        return false;
-      }
-
-      // 过渡点2
-      if (transition_points.size() >= 2) {
-        wp3_trans2_ = transition_points[1];
-        RCLCPP_INFO(get_logger(), "单独解析：过渡点2（坐标：%.2f, %.2f）", 
-                    wp3_trans2_.pose.position.x, wp3_trans2_.pose.position.y);
-      } else {
-        RCLCPP_ERROR(get_logger(), "过渡点2未找到");
-        return false;
-      }
-
-      // 主航点2
-      if (all_wp_map_.find(main_wp_ids[1]) != all_wp_map_.end()) {
-        wp4_main_ = all_wp_map_[main_wp_ids[1]];
-        RCLCPP_INFO(get_logger(), "单独解析：主航点2（%s）（坐标：%.2f, %.2f）", 
-                    main_wp_ids[1].c_str(), wp4_main_.pose.position.x, wp4_main_.pose.position.y);
-      } else {
-        RCLCPP_ERROR(get_logger(), "主航点2 %s 未找到", main_wp_ids[1].c_str());
-        return false;
-      }
-
-      RCLCPP_INFO(get_logger(), "4个航点单独解析完成");
-      return true;
-
-    } catch (const YAML::BadFile& e) {
-      RCLCPP_ERROR(get_logger(), "打开YAML失败：%s", e.what());
-      return false;
-    } catch (const YAML::ParserException& e) {
-      RCLCPP_ERROR(get_logger(), "YAML格式错误：%s", e.what());
-      return false;
-    }
-  }
-
-  // 计算两个2D点之间的直线距离
-  double calculate_2d_distance(const geometry_msgs::msg::PoseStamped& pose1, const geometry_msgs::msg::PoseStamped& pose2, bool print = false)
-  {
-    if (print) {
-      RCLCPP_INFO(get_logger(), "当前位置：(%.2f, %.2f)，目标位置：(%.2f, %.2f)",
-                  pose1.pose.position.x, pose1.pose.position.y,
-                  pose2.pose.position.x, pose2.pose.position.y);
     }
 
-    if (pose1.header.frame_id != "map" || pose2.header.frame_id != "map") {
-      RCLCPP_WARN(get_logger(), "距离计算坐标系错误，必须为map");
-      return 1000.0;
-    }
-    double dx = pose2.pose.position.x - pose1.pose.position.x;
-    double dy = pose2.pose.position.y - pose1.pose.position.y;
-    return std::sqrt(dx*dx + dy*dy);
-  }
-
-  // 获取机器人当前位置（从TF获取map→base_link）
-  bool get_current_robot_pose(geometry_msgs::msg::PoseStamped& current_pose)
-  {
-    current_pose.header.frame_id = "map";
-    current_pose.header.stamp = this->now();
-    try {
-      geometry_msgs::msg::TransformStamped transform = tf_buffer_->lookupTransform(
-        "map", "base_link", tf2::TimePointZero, 500ms);
-      
-      current_pose.pose.position.x = transform.transform.translation.x;
-      current_pose.pose.position.y = transform.transform.translation.y;
-      current_pose.pose.position.z = transform.transform.translation.z;
-      current_pose.pose.orientation = transform.transform.rotation;
-      return true;
-    } catch (tf2::TransformException& ex) {
-      RCLCPP_DEBUG(get_logger(), "获取机器人位置失败：%s（重试）", ex.what());
-      return false;
-    }
-  }
-
-  // Z轴上升动作
-  void execute_post_waypoint_actions(int current_wp_index)
-  {
-    if (rise_triggered_) return;
-
-    RCLCPP_INFO(get_logger(), "执行第%d个航点的Z轴上升动作", current_wp_index + 1);
-    rclcpp::sleep_for(500ms);
-
-    // 连续发布上升指令
-    geometry_msgs::msg::Twist z_cmd;
-    z_cmd.linear.z = 1.0;
-    for (int i = 0; i < 10; ++i) {
-      cmd_vel_pub_->publish(z_cmd);
-      rclcpp::sleep_for(100ms);
-    }
-    RCLCPP_INFO(get_logger(), "Z轴上升（1.0m/s，持续1秒）");
-
-    // 连续发布停止指令
-    z_cmd.linear.z = 0.0;
-    for (int i = 0; i < 5; ++i) {
-      cmd_vel_pub_->publish(z_cmd);
-      rclcpp::sleep_for(100ms);
-    }
-    RCLCPP_INFO(get_logger(), "Z轴停止");
-
-    rise_triggered_ = true;
-  }
-
-  // 轮询检查目标状态（替代临时执行器的核心函数）
-  void poll_goal_status()
-  {
-    if (!goal_sent_ || !current_goal_handle_) return;
-
-    // 检查是否到达目标范围
-    geometry_msgs::msg::PoseStamped robot_pose;
-    if (get_current_robot_pose(robot_pose)) {
-      double distance = calculate_2d_distance(robot_pose, current_target_pose_, true);
-      RCLCPP_INFO_THROTTLE(get_logger(), *this->get_clock(), 1000, 
-                          "航点%d进度：距离目标%.2f米（到达阈值%.2f米）", 
-                          current_wp_index_ + 1, distance, waypoint_arrival_distance_);
-
-      if (distance < waypoint_arrival_distance_) {
-        RCLCPP_INFO(get_logger(), "航点%d进入到达范围，主动终止导航", current_wp_index_ + 1);
-        follow_action_client_->async_cancel_goal(current_goal_handle_);
-        goal_succeeded_ = true;
-        goal_sent_ = false;
-      }
+    // 等待Action服务器就绪
+    if (!wait_for_action_server_with_timeout(std::chrono::seconds(10))) {  // 超时10秒
+        RCLCPP_ERROR(this->get_logger(), "未连接到FollowWaypoints Action服务器，导航终止");
+        return;
     }
 
-    // 检查目标是否完成（服务器反馈）
-    auto status = current_goal_handle_->get_status();
-    if (status == action_msgs::msg::GoalStatus::STATUS_SUCCEEDED) {
-      RCLCPP_INFO(get_logger(), "航点%d到达完成（服务器结果码：成功）", current_wp_index_ + 1);
-      goal_succeeded_ = true;
-      goal_sent_ = false;
-    } else if (status == action_msgs::msg::GoalStatus::STATUS_ABORTED ||
-               status == action_msgs::msg::GoalStatus::STATUS_CANCELED) {
-      RCLCPP_ERROR(get_logger(), "航点%d导航失败（状态码：%d）", current_wp_index_ + 1, status);
-      goal_succeeded_ = false;
-      goal_sent_ = false;
+    // 发送导航目标
+    send_nav_goal();
+}
+
+// 等待Action服务器（带超时）
+bool WaypointLoader::wait_for_action_server_with_timeout(const std::chrono::seconds& timeout) {
+    auto start_time = std::chrono::steady_clock::now();
+    while (!follow_action_client_->wait_for_action_server(1s)) {
+        if (std::chrono::steady_clock::now() - start_time > timeout) {
+            return false;
+        }
+        RCLCPP_INFO(this->get_logger(), "等待FollowWaypoints Action服务器（剩余%.1f秒）...",
+            std::chrono::duration<double>(timeout - (std::chrono::steady_clock::now() - start_time)).count());
     }
-  }
+    RCLCPP_INFO(this->get_logger(), "已连接到FollowWaypoints Action服务器");
+    return true;
+}
 
-  // 发送航点并等待完成（基于轮询的非阻塞版本）
-  bool send_waypoint_and_wait(const geometry_msgs::msg::PoseStamped& waypoint, int wp_index)
-  {
-    if (!wait_for_action_server_with_timeout()) {
-      return false;
+// 发送完整路径导航目标
+void WaypointLoader::send_nav_goal() {
+    if (full_waypoints_.empty()) {
+        RCLCPP_ERROR(this->get_logger(), "完整路径为空，无法发送导航目标");
+        return;
     }
 
-    // 初始化状态变量
-    goal_sent_ = false;
-    goal_succeeded_ = false;
-    goal_send_failed_ = false;
-    current_wp_index_ = wp_index;
-    current_target_pose_ = waypoint;
-    current_goal_handle_ = nullptr;
-    goal_send_start_time_ = this->now();  // 记录发送开始时间
+    // 构建导航目标消息
+    auto goal_msg = FollowWaypoints::Goal();
+    goal_msg.poses = full_waypoints_;  // 完整路径（主航点+过渡点）
 
-    // 构建目标消息
-    FollowWaypoints::Goal goal_msg;
-    goal_msg.poses = {waypoint};
-
-    // 发送目标（纯异步，通过回调处理结果，无 spin）
+    // 配置Action回调
     auto send_goal_options = rclcpp_action::Client<FollowWaypoints>::SendGoalOptions();
-
-    // 目标响应回调（替代 spin_until_future_complete）
-    // 替换原 goal_response_callback 代码块
     send_goal_options.goal_response_callback =
-      [this](std::shared_ptr<GoalHandleFollow> goal_handle) {  // 修正参数类型
-        try {
-          if (!goal_handle) {
-            RCLCPP_ERROR(get_logger(), "航点%d被服务器拒绝", current_wp_index_ + 1);
-            goal_send_failed_ = true;
-            goal_sent_ = false;
-          } else {
-            current_goal_handle_ = goal_handle;
-            goal_sent_ = true;
-            goal_send_failed_ = false;
-          }
-        } catch (...) {
-          RCLCPP_ERROR(get_logger(), "航点%d获取目标句柄失败", current_wp_index_ + 1);
-          goal_send_failed_ = true;
-          goal_sent_ = false;
-        }
-      };
-
-
-    // 结果回调（不变）
+        std::bind(&WaypointLoader::goal_response_callback, this, std::placeholders::_1);
+    send_goal_options.feedback_callback =
+        std::bind(&WaypointLoader::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
     send_goal_options.result_callback =
-    [this](const GoalHandleFollow::WrappedResult & result) {
-      // 1. 打印结果码和描述
-      std::string result_desc;
-      if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
-        result_desc = "成功（SUCCEEDED）";
-      } else if (result.code == rclcpp_action::ResultCode::ABORTED) {
-        result_desc = "中止（ABORTED）";
-      } else if (result.code == rclcpp_action::ResultCode::CANCELED) {
-        result_desc = "取消（CANCELED）";
-      } else {
-        result_desc = "未知（UNKNOWN）";
-      }
-      RCLCPP_INFO(get_logger(), "航点%d Result：%s（代码：%d）",
-                  current_wp_index_ + 1, result_desc.c_str(), static_cast<int>(result.code));
+        std::bind(&WaypointLoader::result_callback, this, std::placeholders::_1);
 
-      // 2. 打印 Result 中的具体数据（如 missed_waypoints）
-      // FollowWaypoints 的 Result 包含“未到达的航点索引列表”
-      if (!result.result->missed_waypoints.empty()) {
-        RCLCPP_WARN(get_logger(), "航点%d 未到达的航点索引：", current_wp_index_ + 1);
-        for (auto idx : result.result->missed_waypoints) {
-          RCLCPP_WARN(get_logger(), "  - 索引 %d", idx);
-        }
-      } else {
-        RCLCPP_INFO(get_logger(), "航点%d 所有航点均成功到达（missed_waypoints 为空）", current_wp_index_ + 1);
-      }
-
-      // 3. 更新状态变量（原有逻辑不变）
-      goal_succeeded_ = (result.code == rclcpp_action::ResultCode::SUCCEEDED);
-      goal_sent_ = false;
-    };
-
-
-    // 发送目标（纯异步，无阻塞）
+    // 发送目标
     follow_action_client_->async_send_goal(goal_msg, send_goal_options);
+    RCLCPP_INFO(this->get_logger(), "已发送导航目标，共%d个航点", (int)full_waypoints_.size());
+}
 
-    // 等待目标发送结果/超时（通过轮询状态变量，无 spin）
-    auto start_time = this->now();
-    while (rclcpp::ok()) {
-      // 超时检查
-      if ((this->now() - start_time).seconds() > 20.0) {
-        RCLCPP_ERROR(get_logger(), "航点%d发送超时", wp_index + 1);
-        return false;
-      }
-      // 目标发送成功/失败，退出等待
-      if (goal_sent_ || goal_send_failed_) {
-        break;
-      }
-      rclcpp::sleep_for(100ms);  // 让出CPU，避免占用
+// Action目标响应回调
+void WaypointLoader::goal_response_callback(const GoalHandleFollow::SharedPtr& goal_handle) {
+    if (!goal_handle) {
+        RCLCPP_ERROR(this->get_logger(), "导航目标被服务器拒绝（可能是路径无效）");
+    } else {
+        RCLCPP_INFO(this->get_logger(), "导航目标已被服务器接受，开始导航...");
+    }
+}
+
+// Action反馈回调（实时获取已完成的航点）
+void WaypointLoader::feedback_callback(GoalHandleFollow::SharedPtr,
+    const std::shared_ptr<const FollowWaypoints::Feedback> feedback) {
+    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+
+    // current_waypoint 表示“当前正在执行的航点索引”（从0开始）
+    uint32_t current_idx = feedback->current_waypoint;
+
+    // 过滤重复反馈（仅当索引变化时处理）
+    if (current_idx == last_processed_waypoint_) {
+        RCLCPP_WARN(this->get_logger(), "航点索引没有发生变化，反馈可能出现问题请排查...");
+        return;
+    }
+    last_processed_waypoint_ = current_idx;
+
+    RCLCPP_INFO(this->get_logger(), "正在执行航点%d（共%d个）",
+        current_idx, (int)full_waypoints_.size() - 1);
+
+    // 检查索引有效性
+    if (current_idx >= full_waypoints_.size()) {
+        RCLCPP_WARN(this->get_logger(), "航点索引超出范围：%u ≥ %zu",
+            current_idx, full_waypoints_.size());
+        return;
     }
 
-    // 目标发送失败，返回false
-    if (goal_send_failed_) {
-      return false;
+    // 过渡点1（索引模3=1）：执行Z轴上升（在开始执行该航点时触发）
+    if (current_idx % 3 == 1 && !rise_triggered_) {
+        RCLCPP_INFO(this->get_logger(), "触发过渡点1动作（Z轴上升）");
+        execute_transition1_action();
+        rise_triggered_ = true;
+    }
+    // 过渡点2（索引模3=2）：执行延迟2秒（在开始执行该航点时触发）
+    else if (current_idx % 3 == 2) {
+        RCLCPP_INFO(this->get_logger(), "触发过渡点2动作（延迟2秒）");
+        execute_transition2_action();
+        rise_triggered_ = false;  // 重置，为下一组过渡点准备
+    }
+}
+
+
+// Action结果回调（导航完成/失败）
+void WaypointLoader::result_callback(const GoalHandleFollow::WrappedResult& result) {
+    switch (result.code) {
+        case rclcpp_action::ResultCode::SUCCEEDED:
+            if (result.result->missed_waypoints.empty()) {
+                RCLCPP_INFO(this->get_logger(), "导航成功完成！所有航点均到达");
+            } else {
+                RCLCPP_WARN(this->get_logger(), "导航完成，但有 %zu 个航点未到达",
+                           result.result->missed_waypoints.size());
+            }
+            break;
+        case rclcpp_action::ResultCode::ABORTED:
+            RCLCPP_ERROR(this->get_logger(), "导航被中止！");
+            break;
+        case rclcpp_action::ResultCode::CANCELED:
+            RCLCPP_WARN(this->get_logger(), "导航被取消！");
+            break;
+        default:
+            RCLCPP_ERROR(this->get_logger(), "导航结果未知（错误码：%d）", (int)result.code);
+            break;
     }
 
-    // 等待航点完成（通过轮询状态变量，无 spin）
-    start_time = this->now();
-    while (rclcpp::ok()) {
-      // 总超时检查（300秒）
-      if ((this->now() - start_time).seconds() > 300.0) {
-        RCLCPP_ERROR(get_logger(), "航点%d导航超时（300s）", wp_index + 1);
-        if (current_goal_handle_) {
-          follow_action_client_->async_cancel_goal(current_goal_handle_);
-        }
-        return false;
-      }
-      // 航点完成/失败，退出等待
-      if (!goal_sent_) {
-        break;
-      }
-      rclcpp::sleep_for(100ms);
+    // 重置状态
+    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+    last_completed_waypoint_ = -1;
+    rise_triggered_ = false;
+}
+
+
+// 过渡点1动作：Z轴上升1秒（1.0m/s）
+void WaypointLoader::execute_transition1_action() {
+    geometry_msgs::msg::Twist cmd;
+    cmd.linear.z = 1.0;  // 上升速度
+
+    // 连续发布10次（10×100ms=1秒），确保执行器收到
+    for (int i = 0; i < 10; ++i) {
+        cmd_vel_pub_->publish(cmd);
+        rclcpp::sleep_for(100ms);
     }
 
-    // 补算最终距离（不变）
-    geometry_msgs::msg::PoseStamped robot_pose;
-    if (get_current_robot_pose(robot_pose)) {
-      double final_distance = calculate_2d_distance(robot_pose, waypoint, true);
-      RCLCPP_INFO(get_logger(), "航点%d完成后补算：距离目标%.2f米", 
-                  wp_index + 1, final_distance);
+    // 发布停止指令（冗余5次）
+    cmd.linear.z = 0.0;
+    for (int i = 0; i < 5; ++i) {
+        cmd_vel_pub_->publish(cmd);
+        rclcpp::sleep_for(100ms);
     }
+    RCLCPP_INFO(this->get_logger(), "过渡点1动作完成（Z轴上升1秒）");
+}
 
-    return goal_succeeded_;
-  }
+// 过渡点2动作：延迟2秒
+void WaypointLoader::execute_transition2_action() {
+    rclcpp::sleep_for(2000ms);  // 延迟2秒
+    RCLCPP_INFO(this->get_logger(), "过渡点2动作完成（延迟2秒）");
+}
 
-
-  // 按顺序发布航点
-  void publish_waypoints_step_by_step()
-  {
-    // 步骤1：发布主航点1
-    RCLCPP_INFO(get_logger(), "\n===== 发布第1个航点：主航点1（到达阈值%.2fm） =====", waypoint_arrival_distance_);
-    if (!send_waypoint_and_wait(wp1_main_, 0)) {
-      RCLCPP_ERROR(get_logger(), "主航点1导航失败，终止流程");
-      rclcpp::shutdown();
-      return;
-    }
-
-    // 步骤2：发布过渡点1
-    RCLCPP_INFO(get_logger(), "\n===== 发布第2个航点：过渡点1（到达阈值%.2fm） =====", waypoint_arrival_distance_);
-    if (!send_waypoint_and_wait(wp2_trans1_, 1)) {
-      RCLCPP_ERROR(get_logger(), "过渡点1导航失败，终止流程");
-      rclcpp::shutdown();
-      return;
-    }
-
-    // 过渡点1完成后停留检查
-    RCLCPP_INFO(get_logger(), "\n===== 过渡点1导航完成，停留%.1f秒检查上升条件 =====", pre_trans2_wait_time_);
-    auto start_wait = this->now();
-    while ((this->now() - start_wait).seconds() < pre_trans2_wait_time_ && rclcpp::ok()) {
-      geometry_msgs::msg::PoseStamped robot_pose;
-      if (get_current_robot_pose(robot_pose)) {
-        double distance = calculate_2d_distance(robot_pose, wp2_trans1_, true);
-        RCLCPP_INFO_THROTTLE(get_logger(), *this->get_clock(), 1000, 
-                            "等待期间：距离过渡点1 %.2f米（阈值%.2f米）", distance, rise_trigger_distance_);
-        if (!rise_triggered_ && distance < rise_trigger_distance_) {
-          execute_post_waypoint_actions(1);
-        }
-      }
-      rclcpp::sleep_for(100ms);
-    }
-    if (!rise_triggered_) {
-      RCLCPP_WARN(get_logger(), "停留期间未满足上升条件，强制触发");
-      execute_post_waypoint_actions(1);
-    }
-
-    // 步骤3：发布过渡点2
-    RCLCPP_INFO(get_logger(), "\n===== 发布第3个航点：过渡点2（到达阈值%.2fm） =====", waypoint_arrival_distance_);
-    if (!send_waypoint_and_wait(wp3_trans2_, 2)) {
-      RCLCPP_ERROR(get_logger(), "过渡点2导航失败，终止流程");
-      rclcpp::shutdown();
-      return;
-    }
-
-    // 步骤4：发布主航点2
-    RCLCPP_INFO(get_logger(), "\n===== 发布第4个航点：主航点2（到达阈值%.2fm） =====", waypoint_arrival_distance_);
-    if (!send_waypoint_and_wait(wp4_main_, 3)) {
-      RCLCPP_ERROR(get_logger(), "主航点2导航失败，终止流程");
-      rclcpp::shutdown();
-      return;
-    }
-
-    RCLCPP_INFO(get_logger(), "所有航点导航完成！");
-    rclcpp::shutdown();
-  }
-
-  // 启动逻辑
-  void on_start_timer()
-  {
-    RCLCPP_INFO(get_logger(), "开始解析4个航点...");
-
-    if (!parse_four_waypoints()) {
-      RCLCPP_ERROR(get_logger(), "解析4个航点失败，退出");
-      rclcpp::shutdown();
-      return;
-    }
-
-    if (rise_trigger_wp_index_ != 1) {
-      RCLCPP_WARN(get_logger(), "上升索引自动调整为过渡点1（索引=1）");
-      rise_trigger_wp_index_ = 1;
-    }
-
-    publish_waypoints_step_by_step();
-  }
-
-};  // 闭合WaypointLoader类括号
-
-}  // 闭合sentry_waypoint_loader_cpp命名空间
-
-// 主函数
-int main(int argc, char ** argv)
+// 添加标准main函数
+int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::NodeOptions options;
-
-  auto node = std::make_shared<sentry_waypoint_loader_cpp::WaypointLoader>(options);
-  rclcpp::spin(node);  // 仅使用主执行器
-
+  auto node = std::make_shared<sentry_waypoint_loader_cpp::WaypointLoader>();
+  rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 }
-

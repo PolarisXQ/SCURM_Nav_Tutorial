@@ -36,6 +36,10 @@ waypoints: [-1,2]
   pose:
     position: {x: -0.55, y: 0.35, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 400
+    mode: "wait_for_completion"
 # -2号-后（Y-0.5 → -0.65）
 -2_back:
   header: {frame_id: "map"}
@@ -67,6 +71,10 @@ waypoints: [-1,2]
   pose:
     position: {x: -1.75, y: 0.35, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # -1号-后（Y-0.5 → -0.65）
 -1_back:
   header: {frame_id: "map"}
@@ -98,6 +106,10 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.95, y: 0.35, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 400
+    mode: "wait_for_completion"
 # 0号-后（Y-0.5 → -0.65）
 0_back:
   header: {frame_id: "map"}
@@ -133,18 +145,30 @@ waypoints: [-1,2]
   pose:
     position: {x: -0.55, y: 1.55, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 1号-后（Y-0.5 → 0.55）
 1_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -0.55, y: 0.55, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 400
+    mode: "wait_for_delay_completion"
 # 1号-左（X-0.5 → -1.05）
 1_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.05, y: 1.05, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 1号-右（X+0.5 → -0.05）
 1_right:
   header: {frame_id: "map"}
@@ -164,24 +188,40 @@ waypoints: [-1,2]
   pose:
     position: {x: -1.75, y: 1.55, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 2号-后（Y-0.5 → 0.55）
 2_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.75, y: 0.55, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 2号-左（X-0.5 → -2.25）
 2_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.25, y: 1.05, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 2号-右（X+0.5 → -1.25）
 2_right:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.25, y: 1.05, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 
 # 3号：第一排左角（原始点）
 3:
@@ -195,12 +235,20 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.95, y: 1.55, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 3号-后（Y-0.5 → 0.55）
 3_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.95, y: 0.55, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 400
+    mode: "wait_for_delay_completion"
 # 3号-左（X-0.5 → -3.45）
 3_left:
   header: {frame_id: "map"}
@@ -213,6 +261,10 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.45, y: 1.05, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 
 # ==============================================
 # 第二排航点（原始Y=2.25）
@@ -229,18 +281,30 @@ waypoints: [-1,2]
   pose:
     position: {x: -0.55, y: 2.75, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 4号-后（Y-0.5 → 1.75）
 4_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -0.55, y: 1.75, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 4号-左（X-0.5 → -1.05）
 4_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.05, y: 2.25, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 4号-右（X+0.5 → -0.05）
 4_right:
   header: {frame_id: "map"}
@@ -260,24 +324,40 @@ waypoints: [-1,2]
   pose:
     position: {x: -1.75, y: 2.75, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 5号-后（Y-0.5 → 1.75）
 5_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.75, y: 1.75, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 5号-左（X-0.5 → -2.25）
 5_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.25, y: 2.25, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 5号-右（X+0.5 → -1.25）
 5_right:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.25, y: 2.25, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 
 # 6号：第二排左角（原始点）
 6:
@@ -291,12 +371,20 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.95, y: 2.75, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 6号-后（Y-0.5 → 1.75）
 6_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.95, y: 1.75, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 6号-左（X-0.5 → -3.45）
 6_left:
   header: {frame_id: "map"}
@@ -309,6 +397,10 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.45, y: 2.25, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 
 # ==============================================
 # 第三排航点（原始Y=3.45）
@@ -325,18 +417,30 @@ waypoints: [-1,2]
   pose:
     position: {x: -0.55, y: 3.95, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 7号-后（Y-0.5 → 2.95）
 7_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -0.55, y: 2.95, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 7号-左（X-0.5 → -1.05）
 7_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.05, y: 3.45, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 7号-右（X+0.5 → -0.05）
 7_right:
   header: {frame_id: "map"}
@@ -356,24 +460,40 @@ waypoints: [-1,2]
   pose:
     position: {x: -1.75, y: 3.95, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 8号-后（Y-0.5 → 2.95）
 8_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.75, y: 2.95, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 8号-左（X-0.5 → -2.25）
 8_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.25, y: 3.45, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 8号-右（X+0.5 → -1.25）
 8_right:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.25, y: 3.45, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 
 # 9号：第三排左角（原始点）
 9:
@@ -387,12 +507,20 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.95, y: 3.95, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 9号-后（Y-0.5 → 2.95）
 9_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.95, y: 2.95, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 9号-左（X-0.5 → -3.45）
 9_left:
   header: {frame_id: "map"}
@@ -405,6 +533,10 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.45, y: 3.45, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 
 # ==============================================
 # 第四排航点（原始Y=4.65）
@@ -421,18 +553,30 @@ waypoints: [-1,2]
   pose:
     position: {x: -0.55, y: 5.15, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 10号-后（Y-0.5 → 4.15）
 10_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -0.55, y: 4.15, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 10号-左（X-0.5 → -1.05）
 10_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.05, y: 4.65, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 10号-右（X+0.5 → -0.05）
 10_right:
   header: {frame_id: "map"}
@@ -452,24 +596,40 @@ waypoints: [-1,2]
   pose:
     position: {x: -1.75, y: 5.15, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 400
+    mode: "wait_for_delay_completion"
 # 11号-后（Y-0.5 → 4.15）
 11_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.75, y: 4.15, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 11号-左（X-0.5 → -2.25）
 11_left:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.25, y: 4.65, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 11号-右（X+0.5 → -1.25）
 11_right:
   header: {frame_id: "map"}
   pose:
     position: {x: -1.25, y: 4.65, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 
 # 12号：第四排左角（原始点）
 12:
@@ -483,12 +643,20 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.95, y: 5.15, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "delayed_descend"
+    height_mm: 200
+    mode: "wait_for_delay_completion"
 # 12号-后（Y-0.5 → 4.15）
 12_back:
   header: {frame_id: "map"}
   pose:
     position: {x: -2.95, y: 4.15, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"
 # 12号-左（X-0.5 → -3.45）
 12_left:
   header: {frame_id: "map"}
@@ -501,3 +669,7 @@ waypoints: [-1,2]
   pose:
     position: {x: -2.45, y: 4.65, z: 0.0}
     orientation: {x: 0.0, y: 0.0, z: 0.7071, w: 0.7071}
+  task:
+    action: "ascend"
+    height_mm: 200
+    mode: "wait_for_completion"

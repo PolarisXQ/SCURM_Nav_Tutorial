@@ -350,7 +350,7 @@ def generate_launch_description():
 
     waypoint_loader_node = Node(
         package='sentry_waypoint_loader_cpp',
-        executable='waypoint_loader_cpp',
+        executable='waypoint_loader',
         name='waypoint_loader_cpp',
         output='screen',
         parameters=[{
@@ -359,7 +359,6 @@ def generate_launch_description():
         }]
     )
 
-    # 修改后正确代码（指定配置文件，加载 publish_feedback: true）
     waypoint_follower_node = Node(
     package='nav2_waypoint_follower',
     executable='waypoint_follower',
