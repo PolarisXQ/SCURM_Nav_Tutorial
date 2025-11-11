@@ -359,20 +359,20 @@ def generate_launch_description():
         }]
     )
 
-    waypoint_follower_node = Node(
-    package='nav2_waypoint_follower',
-    executable='waypoint_follower',
-    name='waypoint_follower',
-    output='screen',
-    # 关键：添加参数配置，指向你的 nav2_params.yaml
-    parameters=[
-        '/home/sentry_ws/src/sentry_bringup/params/nav2_params.yaml'  # 替换成你实际的配置文件路径！
-    ]
-)
+    # waypoint_follower_node = Node(
+    # package='nav2_waypoint_follower',
+    # executable='waypoint_follower',
+    # name='waypoint_follower',
+    # output='screen',
+    # # 关键：添加参数配置，指向你的 nav2_params.yaml
+    # parameters=[
+    #     '/home/sentry_ws/src/sentry_bringup/params/nav2_params.yaml'  # 替换成你实际的配置文件路径！
+    # ]
+    # )
 
 
     # 把它加到 launch description 里
     ld.add_action(waypoint_loader_node)
-    ld.add_action(waypoint_follower_node)
+    # ld.add_action(waypoint_follower_node)
 
     return ld

@@ -17,13 +17,14 @@
   <depend>nav2_msgs</depend>               <!-- 包含 FollowWaypoints 动作定义 -->
   <depend>geometry_msgs</depend>           <!-- 包含 PoseStamped 航点格式 -->
   <depend>lifecycle_msgs</depend>
+  <depend>nav2_waypoint_follower</depend>
 
   <!-- yaml-cpp 系统库依赖（编译时需找头文件，运行时需链接库） -->
   <build_depend>yaml-cpp</build_depend>
   <exec_depend>yaml-cpp</exec_depend>
 
-  <!-- 关键补充：运行时依赖 nav2_waypoint_follower（提供 follow_waypoints 动作服务器） -->
-  <exec_depend>nav2_waypoint_follower</exec_depend>
+  <!-- 关键补充：运行时依赖 nav2_waypoint_follower（提供 follow_waypoints 动作服务器）
+  <exec_depend>nav2_waypoint_follower</exec_depend> -->
 
   <!-- 测试依赖（若不需要测试，可删除这部分；保留不影响编译） -->
   <test_depend>ament_lint_auto</test_depend>

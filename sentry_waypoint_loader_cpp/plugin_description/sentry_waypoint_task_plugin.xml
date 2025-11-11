@@ -1,0 +1,16 @@
+<library path="libsentry_waypoint_task_plugin">
+  <class name="sentry_waypoint_loader_cpp/SentryWaypointTask"
+         type="sentry_waypoint_loader_cpp::SentryWaypointTask"
+         base_class_type="nav2_core::WaypointTaskExecutor">
+    <description>Sentry航点任务插件，执行上升/降落操作</description>
+  </class>
+</library>
+<!-- root@ubuntu20:/home/sentry_ws# ls /opt/ros/humble/share/nav2_core/plugins/
+ls: cannot access '/opt/ros/humble/share/nav2_core/plugins/': No such file or directory
+root@ubuntu20:/home/sentry_ws# ls /opt/ros/humble/share/nav2_core/
+cmake        local_setup.bash  local_setup.sh   package.dsv
+environment  local_setup.dsv   local_setup.zsh  package.xml
+root@ubuntu20:/home/sentry_ws# sudo mkdir -p /opt/ros/humble/share/nav2_core/plugins/
+root@ubuntu20:/home/sentry_ws# sudo cp /home/sentry_ws/install/sentry_waypoint_loader_cpp/share/sentry_waypoint_loader_cpp/plugin_description/sentry_waypoint_task_plugin.xml /opt/ros/humble/share/nav2_core/plugins/
+root@ubuntu20:/home/sentry_ws# ls /opt/ros/humble/share/nav2_core/plugins/
+sentry_waypoint_task_plugin.xml -->
